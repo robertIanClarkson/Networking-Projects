@@ -1,7 +1,11 @@
 [![Work in Repl.it](https://classroom.github.com/assets/work-in-replit-14baed9a392b3a25080506f3b7b6d57f295ec2978f6f33ec97e36a161684cbe9.svg)](https://classroom.github.com/online_ide?assignment_repo_id=3025446&assignment_repo_type=AssignmentRepo)
 # CSC645 Fall 2020 Computer Networks
 Welcome to Computer Networks!. Please modify this README file with the following info: 
-1. Your name, and student id here
+
+Robert Clarkson
+
+915433914
+
 2. Update this table of assignments. Set to done after one of the assignments is completed:
 
 | Assignment                   |     C/NC      |
