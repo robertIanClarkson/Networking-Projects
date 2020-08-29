@@ -20,9 +20,9 @@ Name: Jose
 SID: 91744100
 Github Username:
 """
-name = "" # TODO: your name
-SID = 000000000 # TODO: your student id
-git_username = "" # TODO: your github username
+name = "Robert Clarkson" # TODO: your name
+SID = 915433914 # TODO: your student id
+git_username = "robertIanClarkson" # TODO: your github username
 print(name)
 print(SID)
 print(git_username)
@@ -43,7 +43,15 @@ Result is 1002
 """
 print("Problem 1 ********************") # problem header (don't modify)
 # TODO: your code here
-
+# firstInt = int(input("Enter the first integer: "))
+# secondInt = int(input("Enter the second integer: "))
+# result = "Result is "
+# product = (firstInt * secondInt)
+# if(product <= 500): 
+#     result += str(product)
+# else:
+#     result += str(firstInt + secondInt)
+# print(result)
 
 ########################## Problem 2: String Processing ##############################################################
 """
@@ -58,6 +66,8 @@ print("Problem 2 ********************") # problem header (don't modify)
 myString = "Alice and Bob go to the same school. They learned today in class how to treat a lice" \
            "infestation, and Alice found the lecture really interesting"
 # TODO: your code here
+key = 'Alice'
+print("'%s' found %i times" % (key, myString.count(key)) ) # Case Sensitive?
 
 ########################## Problem 3: Loops ############################################################################
 """
@@ -69,6 +79,11 @@ Outputs: 5, 15, 34, 56, 120, 178, 190.
 print("Problem 3 ********************") # problem header (don't modify)
 numbers = [5, 10, 24, 32, 88, 90, 100]
 # TODO: your code here
+if(len(numbers) > 0):
+    print(numbers[0])
+    for n in range(len(numbers) - 1):
+        print(numbers[n] + numbers[n+1]) # output okay?
+
 
 ########################## Problem 4: Functions/Methods/Lists ##########################################################
 """
@@ -82,6 +97,11 @@ print("Problem 4 ********************") # problem header (don't modify)
 def merge_odds(l1, l2):
     odds = []
     # TODO: your code here
+    odds = l1 + l2
+    for n in odds:
+        if n%2 == 0:
+            odds.remove(n)
+    odds.sort()
     return odds
 l1 = [2,1,5,7,9]
 l2 = [32,33,13]
@@ -100,6 +120,21 @@ print("Problem 5 ********************") # problem header
 def merge_odds(l1, l2):
     odds = {}
     # TODO: your code here
+    for n in l1:
+        if(n%2 == 0):
+            l1.remove(n)
+    for n in l2:
+        if(n%2 == 0):
+            l2.remove(n)
+    i = 1
+    while not (len(l1) == 0 and len(l2) == 0):
+        if (len(l1) == 0):
+            odds[i] = [l2.pop(0)]
+        elif (len(l2) == 0):
+            odds[i] = [l1.pop(0)]
+        else:
+            odds[i] = [l1.pop(0), l2.pop(0)]
+        i += 1    
     return odds
 l1 = [2,1,5,7,9]
 l2 = [32,33,13]
