@@ -43,15 +43,15 @@ Result is 1002
 """
 print("Problem 1 ********************") # problem header (don't modify)
 # TODO: your code here
-# firstInt = int(input("Enter the first integer: "))
-# secondInt = int(input("Enter the second integer: "))
-# result = "Result is "
-# product = (firstInt * secondInt)
-# if(product <= 500): 
-#     result += str(product)
-# else:
-#     result += str(firstInt + secondInt)
-# print(result)
+firstInt = int(input("Enter the first integer: "))
+secondInt = int(input("Enter the second integer: "))
+result = "Result is "
+product = (firstInt * secondInt)
+if(product <= 500): 
+    result += str(product)
+else:
+    result += str(firstInt + secondInt)
+print(result)
 
 ########################## Problem 2: String Processing ##############################################################
 """
