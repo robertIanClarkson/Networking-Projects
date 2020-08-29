@@ -6,12 +6,10 @@ Robert Clarkson
 
 915433914
 
-2. Update this table of assignments. Set to done after one of the assignments is completed:
-
 | Assignment                   |     C/NC      |
 | ---------------------------- | ------------- |
-| Lab 0                        | not completed |
-| Lab 1                        | not completed |
+| Lab 0                        | completed     |
+| Lab 1                        | completed     |
 | Lab 2                        | not completed |
 | Lab 3                        | not completed |
 | Lab 4                        | not completed |
