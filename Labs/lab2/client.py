@@ -27,9 +27,9 @@ class Client(object):
         """
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_id = None
-        self.student_name = None # TODO: your name
-        self.github_username = None # TODO: your username
-        self.sid = 0 # TODO: your student id
+        self.student_name = 'Robert Clarkson' # TODO: your name
+        self.github_username = 'robertIanClarkson' # TODO: your username
+        self.sid = 915433914 # TODO: your student id
 
     def connect(self, server_ip_address, server_port):
         """
@@ -39,15 +39,22 @@ class Client(object):
         :return:
         """
         #TODO: 1. use the self.client to create a connection with the server
+        try:
+            self.client.connect((server_ip_address, server_port))
+            print("Successfully connected")
+        except ConnectionRefusedError:
+            print("Failed to connect")
+            return
 
         #TODO: 2. once the client creates a successful connection, the server will send the client id to this client.
         #      call the method set_client_id() to implement that functionality.
+        self.set_client_id()
 
         # data dictionary already created for you. Don't modify.
         data = {'student_name': self.student_name, 'github_username': self.github_username, 'sid': self.sid}
 
         #TODO  3. send the above data to the server. using the send method which has been already implemented for you.
-
+        self.send(data)
         while True: # client is put in listening mode to retrieve data from server.
             data = self.receive()
             if not data:
