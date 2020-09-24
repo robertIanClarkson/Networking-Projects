@@ -16,6 +16,7 @@ import socket
 import pickle
 from threading import Thread
 
+
 class Server(object):
     """
     The server class implements a server socket that can handle multiple client connections.
@@ -24,9 +25,9 @@ class Server(object):
     server must not be stopped when a exception occurs. A proper message needs to be show in the
     server console.
     """
-    MAX_NUM_CONN = 10 # keeps 10 clients in queue
+    MAX_NUM_CONN = 10  # keeps 10 clients in queue
 
-    def __init__(self, host="127.0.0.1", port = 12000):
+    def __init__(self, host="127.0.0.1", port=12000):
         """
         Class constructor
         :param host: by default localhost. Note that '0.0.0.0' takes LAN ip address.
@@ -34,15 +35,15 @@ class Server(object):
         """
         self.host = host
         self.port = port
-        self.serversocket = None # TODO: create the server socket
-        self.client_handlers = {} # initializes client_handlers list
+        self.serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # TODO: create the server socket
+        self.client_handlers = {}  # initializes client_handlers list
 
     def _bind(self):
         """
         # TODO: bind host and port to this server socket
         :return: VOID
         """
-        pass #remove this line after implemented.
+        self.serversocket.bind((self.host, self.port))
 
     def _listen(self):
         """
@@ -52,8 +53,10 @@ class Server(object):
         """
         try:
             self._bind()
-            # your code here
-        except:
+            self.serversocket.listen(self.MAX_NUM_CONN)
+            print("Server listening at ", self.host, "/", self.port)
+        except Exception as e:
+            print("ERROR: _listen --> ", e)
             self.serversocket.close()
 
     def _handler(self, clienthandler):
@@ -63,10 +66,16 @@ class Server(object):
         :return:
         """
         while True:
-             # TODO: receive data from client
-             # TODO: if no data, break the loop
-             # TODO: Otherwise, send acknowledge to client. (i.e a message saying 'server got the data
-             pass  # remove this line after implemented.
+            # TODO: receive data from client
+            # TODO: if no data, break the loop
+            # TODO: Otherwise, send acknowledge to client. (i.e a message saying 'server got the data
+            data = self.receive(clienthandler)
+            if not data:
+                break
+            else:
+                print('New Data Received --> ', data)
+                sendData = {'message': "server got the data"}
+                self.send(clienthandler, sendData)
 
     def _accept_clients(self):
         """
@@ -75,13 +84,15 @@ class Server(object):
         """
         while True:
             try:
-               clienthandler, addr = self.serversocket.accept()
-               # TODO: from the addr variable, extract the client id assigned to the client
-               # TODO: send assigned id to the new client. hint: call the send_clientid(..) method
-               self._handler(clienthandler) # receive, process, send response to client.
-            except:
-               # handle exceptions here
-               pass #remove this line after implemented.
+                clienthandler, addr = self.serversocket.accept()
+                # TODO: from the addr variable, extract the client id assigned to the client
+                # TODO: send assigned id to the new client. hint: call the send_clientid(..) method
+                server_ip = addr[0]
+                client_id = addr[1]
+                self._send_clientid(clienthandler, client_id)
+                self._handler(clienthandler) # receive, process, send response to client.
+            except Exception as e:
+                print("ERROR: _accept_clients --> ", e)
 
     def _send_clientid(self, clienthandler, clientid):
         """
@@ -90,8 +101,8 @@ class Server(object):
         :param clientid:
         :return: VOID
         """
-        pass  # remove this line after implemented.
-
+        data = {'clientid': clientid}
+        self.send(clienthandler, data)
 
     def send(self, clienthandler, data):
         """
@@ -101,7 +112,8 @@ class Server(object):
         :param data: raw data (not serialized yet)
         :return: VOID
         """
-        pass #remove this line after implemented.
+        serialized_data = pickle.dumps(data)
+        clienthandler.send(serialized_data)
 
     def receive(self, clienthandler, MAX_ALLOC_MEM=4096):
         """
@@ -109,7 +121,9 @@ class Server(object):
         :param MAX_ALLOC_MEM: default set to 4096
         :return: the deserialized data.
         """
-        return None #change the return value after implemente.
+        data_from_client = clienthandler.recv(MAX_ALLOC_MEM)
+        serialized_data = pickle.loads(data_from_client)
+        return serialized_data
 
     def run(self):
         """
@@ -120,18 +134,8 @@ class Server(object):
         self._listen()
         self._accept_clients()
 
+
 # main execution
 if __name__ == '__main__':
     server = Server()
     server.run()
-
-
-
-
-
-
-
-
-
-
-
