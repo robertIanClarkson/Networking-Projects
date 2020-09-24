@@ -3,9 +3,9 @@
 # Date: 02/03/2020
 # Lab0: Getting Started with Python
 # Goal: Learning the basics of Python
-# Student Name:
-# Student ID:
-# Student Github Username:
+# Student Name: Robert Clarkson
+# Student ID: 915433914
+# Student Github Username: robertIanClarkson
 # Instructions: Complete the TODO sections for each problem
 # Guidelines: Read each problem carefully, and implement them correctly. Grade is based on lab correctness/completeness
 #               No partial credit will be given.

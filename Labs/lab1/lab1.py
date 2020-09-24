@@ -3,9 +3,9 @@
 # Date: 02/03/2020
 # Lab1: Object Oriented Programming
 # Goal: Learning Python OOP basics
-# Student Name:
-# Student ID:
-# Student Github Username:
+# Student Name: Robert Clarkson
+# Student ID: 915433914
+# Student Github Username: robertIanClarkson
 # Instructions: Read each problem carefully, and implement them correctly.
 #               Your grade in Labs is based on passing all the unit tests provided.
 #               The following is an example of output for a program that passes all the unit tests.

@@ -3,9 +3,9 @@
 # Date: 02/03/2020
 # Lab3: TCP Client Socket
 # Goal: Learning Networking in Python with TCP sockets
-# Student Name:
-# Student ID:
-# Student Github Username:
+# Student Name: Robert Clarkson
+# Student ID: 915433914
+# Student Github Username: robertIanClarkson
 # Instructions: Read each problem carefully, and implement them correctly.  No partial credit will be given.
 ########################################################################################################################
 
