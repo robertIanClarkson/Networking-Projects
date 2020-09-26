@@ -14,6 +14,7 @@
 # don't modify this imports.
 import socket
 import pickle
+from client_handler import ClientHandler
 from threading import Thread
 
 
@@ -59,23 +60,31 @@ class Server(object):
             print("ERROR: _listen --> ", e)
             self.serversocket.close()
 
-    def _handler(self, clienthandler):
-        """
-        #TODO: receive, process, send response to the client using this handler.
-        :param clienthandler:
-        :return:
-        """
-        while True:
-            # TODO: receive data from client
-            # TODO: if no data, break the loop
-            # TODO: Otherwise, send acknowledge to client. (i.e a message saying 'server got the data
-            data = self.receive(clienthandler)
-            if not data:
-                break
-            else:
-                print('New Data Received --> ', data)
-                sendData = {'message': "server got the data"}
-                self.send(clienthandler, sendData)
+    # def _handler(self, clienthandler):
+    #     """
+    #     #TODO: receive, process, send response to the client using this handler.
+    #     :param clienthandler:
+    #     :return:
+    #     """
+    #     # while True:
+    #     #     # TODO: receive data from client
+    #     #     # TODO: if no data, break the loop
+    #     #     # TODO: Otherwise, send acknowledge to client. (i.e a message saying 'server got the data
+    #     #     data = self.receive(clienthandler)
+    #     #     if not data:
+    #     #         break
+    #     #     else:
+    #     #         print('New Data Received --> ', data)
+    #     #         sendData = {'message': "server got the data"}
+    #     #         self.send(clienthandler, sendData)
+
+    def threaded_client(self, clientsocket, addr):
+        client_id = addr[1]
+        client_handler = ClientHandler(self, clientsocket, addr)  # self is the server instance
+        client_handler.run()  # inits all the components in client handler object
+        #  adds the client handler object to the list of all the clients objects created by this server.
+        #  key: client id, value: client handler
+        self.client_handlers[client_id] = client_handler  # assumes dict was initialized in class constructor
 
     def _accept_clients(self):
         """
@@ -85,12 +94,8 @@ class Server(object):
         while True:
             try:
                 clienthandler, addr = self.serversocket.accept()
-                # TODO: from the addr variable, extract the client id assigned to the client
-                # TODO: send assigned id to the new client. hint: call the send_clientid(..) method
-                server_ip = addr[0]
-                client_id = addr[1]
-                self._send_clientid(clienthandler, client_id)
-                self._handler(clienthandler) # receive, process, send response to client.
+                # creeate new client thread.
+                Thread(target=self.threaded_client, args=(clienthandler, addr)).start()
             except Exception as e:
                 print("ERROR: _accept_clients --> ", e)
 

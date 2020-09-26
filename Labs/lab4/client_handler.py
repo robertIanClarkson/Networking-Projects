@@ -3,17 +3,17 @@
 # Date: 02/03/2020
 # Lab3: Server support for multiple clients
 # Goal: Learning Networking in Python with TCP sockets
-# Student Name:
-# Student ID:
-# Student Github Username:
+# Student Name: Robert Clarkson
+# Student ID: 915433914
+# Student Github Username: robertIanClarkson
 # Lab Instructions: No partial credit will be given. Labs must be completed in class, and must be committed to your
 #               personal repository by 9:45 pm.
 # Running instructions: This program needs the server to run. The server creates an object of this class.
 #
 ########################################################################################################################
-
 import threading
 import pickle
+
 class ClientHandler:
     """
     The client handler class receives and process client requests
@@ -36,6 +36,7 @@ class ClientHandler:
     def process_client_data(self):
         """
         TODO: receives the data from the client
+
         TODO: prepares the data to be printed in console
         TODO: acquire the print lock
         TODO: prints the data in server console
@@ -43,7 +44,6 @@ class ClientHandler:
         TODO: keep this handler object listening for more incoming data from the client
         :return: VOID
         """
-        pass # remove this line after implemented.
 
     def send(self, data):
         serialized_data = pickle.dumps(data)
@@ -55,4 +55,5 @@ class ClientHandler:
         return data
 
     def run(self):
+        print("run")
         self.process_client_data()
