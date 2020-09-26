@@ -36,7 +36,6 @@ class ClientHandler:
     def process_client_data(self):
         """
         TODO: receives the data from the client
-
         TODO: prepares the data to be printed in console
         TODO: acquire the print lock
         TODO: prints the data in server console
@@ -44,10 +43,15 @@ class ClientHandler:
         TODO: keep this handler object listening for more incoming data from the client
         :return: VOID
         """
+        data = self.receive()
+        self.print_lock.acquire()
+        print(data)
+        self.print_lock.release()
+
 
     def send(self, data):
         serialized_data = pickle.dumps(data)
-        self.handler.send(data)
+        self.handler.send(serialized_data)
 
     def receive(self, max_mem_alloc=4096):
         raw_data = self.handler.recv(max_mem_alloc)
@@ -55,5 +59,4 @@ class ClientHandler:
         return data
 
     def run(self):
-        print("run")
         self.process_client_data()
