@@ -12,7 +12,7 @@ Robert Clarkson
 | Lab 1                        | completed     |
 | Lab 2                        | completed     |
 | Lab 3                        | completed     |
-| Lab 4                        | not completed |
+| Lab 4                        | completed     |
 | Lab 5                        | not completed |
 | Lab 6                        | not completed |
 | Lab 7                        | not completed |
