@@ -123,19 +123,27 @@ class Server(object):
         """
         try:
             # TODO: create a new client handler object and return it
+
+            # strip the data out of address
             server_ip = address[0]
             client_id = address[1]
             print("- Accept Client: {id}".format(id=client_id))
+
+            # create the client handler
             client_handler = ClientHandler(self, clientsocket, address)
+
+            # notify the server user
             if client_id not in self.clients:
                 print("\t* New Client")
             else:
                 print("\t* Old Client")
-
             self.clients[client_id] = client_handler
             print("\t* Client List:")
             for client in self.clients:
                 print("\t\t- {client}".format(client=client))
+
+            # run the client handler
+            client_handler.run()
         except Exception as e:
             self.serversocket.close()
             raise Exception("ERROR: client_handler_thread --> ", e)
