@@ -68,7 +68,6 @@ class Server(object):
                 # TODO: Accept a client
                 # TODO: Create a thread of this client using the client_handler_threaded class
                 clienthandler, addr = self.serversocket.accept()
-                # print(clienthandler, " | ", addr)
                 Thread(target=self.client_handler_thread, args=(clienthandler, addr)).start()
             except Exception as e:
                 # TODO: Handle exceptions
@@ -123,14 +122,20 @@ class Server(object):
         :return: a client handler object.
         """
         try:
-            # self.send_client_id(clientsocket)
             # TODO: create a new client handler object and return it
             server_ip = address[0]
             client_id = address[1]
+            print("- Accept Client: {id}".format(id=client_id))
             client_handler = ClientHandler(self, clientsocket, address)
-            # client_handler.run()
+            if client_id not in self.clients:
+                print("\t* New Client")
+            else:
+                print("\t* Old Client")
+
             self.clients[client_id] = client_handler
-            print(self.clients.keys())
+            print("\t* Client List:")
+            for client in self.clients:
+                print("\t\t- {client}".format(client=client))
         except Exception as e:
             self.serversocket.close()
             raise Exception("ERROR: client_handler_thread --> ", e)

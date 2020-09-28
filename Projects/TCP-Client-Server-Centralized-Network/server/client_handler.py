@@ -10,7 +10,7 @@
 #                   Note: Must run the server before the client.
 ########################################################################
 import pickle
-import menu
+from menu import Menu
 
 class ClientHandler(object):
     """
@@ -32,15 +32,29 @@ class ClientHandler(object):
         self.server.send_client_id(self.clientsocket, self.client_id)
         self.unreaded_messages = []
 
+        # send the menu to the client
+        self._sendMenu()
+        # self.listen()
+
+
+    # def listen(self):
+
+
     def _sendMenu(self):
         """
         Already implemented for you.
         sends the menu options to the client after the handshake between client and server is done.
         :return: VOID
         """
-        menu = Menu()
-        data = {'menu': menu}
-        self.server.send(self.clientsocket, data)
+        data = self.server.receive(self.clientsocket)
+        # print(data)
+        if (data['id'] == self.client_id):
+            if (data['action'] == 'send menu'):
+                menu = Menu(self.client_id)
+                data = {'menu': menu}
+                self.server.send(self.clientsocket, data)
+                print('- Sent Menu to: {id}'.format(id=self.client_id))
+
 
     def process_options(self):
         """

@@ -32,6 +32,7 @@ class Client(object):
         self.clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         self.clientid = 0
+        self.menu = None
 
     def get_client_id(self):
         return self.clientid
@@ -49,13 +50,20 @@ class Client(object):
             print("Successfully connected to server at {host}/{port}".format(host=host, port=port))
             self.clientid = self.receive()['clientid']
             print("Client ID: {id}".format(id=self.clientid))
+
         except Exception as e:
             self.clientSocket.close()
             raise Exception("ERROR: connect --> {exception}".format(exception=e))
 
 
-
-
+    def getMenu(self):
+        data = {
+            'id': self.clientid,
+            'action': 'send menu'
+        }
+        self.send(data)
+        menu = self.receive()
+        # self.menu = menu
 
     def send(self, data):
         """
@@ -100,3 +108,4 @@ class Client(object):
 if __name__ == '__main__':
     client = Client()
     client.connect()
+    client.getMenu()
