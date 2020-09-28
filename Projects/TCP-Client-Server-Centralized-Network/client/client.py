@@ -30,14 +30,27 @@ class Client(object):
         # AF_INET refers to the address family ipv4.
         # The SOCK_STREAM means connection oriented TCP protocol.
         self.clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
+        self.host = None
+        self.port = None
+        self.name = None
         self.clientid = 0
         # self.menu = None
 
     def get_client_id(self):
         return self.clientid
 
-    def connect(self, host="127.0.0.1", port=12000):
+    def getClientInfo(self, host, port):
+        self.host = input("Enter the server IP Address: ")
+        if self.host == "":
+            self.host = host
+        self.port = input("Enter the server port: ")
+        if self.port == "":
+            self.port = port
+        self.name = input("Your id key (i.e your name): ")
+        if self.name == "":
+            self.name = "undefined"
+
+    def connect(self, host="127.0.0.1", port=13000):
         """
         TODO: Connects to a server. Implements exception handler if connection is resetted. 
 	    Then retrieves the cliend id assigned from server, and sets
@@ -46,8 +59,9 @@ class Client(object):
         :return: VOID
         """
         try:
+            self.getClientInfo(host, port)
             self.clientSocket.connect((host, port))
-            print("Successfully connected to server at {host}/{port}".format(host=host, port=port))
+            print("\nSuccessfully connected to server at {host}/{port}".format(host=host, port=port))
             self.clientid = self.receive()['clientid']
             print("Client ID: {id}".format(id=self.clientid))
         except Exception as e:
@@ -81,7 +95,6 @@ class Client(object):
             self.clientSocket.close()
             raise Exception("ERROR: receive --> {exception}".format(exception=e))
 
-
     def close(self):
         """
         TODO: close the client socket
@@ -96,11 +109,14 @@ class Client(object):
     def run(self):
         while True:
             receiveData = self.receive()
-            if(receiveData['id'] == self.clientid):
+            if (receiveData['id'] == self.clientid):
+                print("")
+                # print("(+) RESPONSE")
                 print(receiveData['message'])
-                print("\nYour option <enter a number>:")
-                option = input()
-                print("\nUser entered: {option}".format(option=option))
+                if("data" in receiveData.keys()):
+                    print(receiveData['data'])
+                option = input("\nYour option <enter a number>: ")
+                # print("\nUser entered: {option}".format(option=option))
                 sendData = {
                     'id': self.clientid,
                     'option_selected': int(option)

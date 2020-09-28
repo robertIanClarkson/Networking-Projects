@@ -44,7 +44,7 @@ class ClientHandler(object):
             'message': menu.get_menu()
         }
         self.server.send(self.clientsocket, data)
-        print('- Sent Menu to: {id}'.format(id=self.client_id))
+        print('\t* Sent Menu to: {id}'.format(id=self.client_id))
 
 
     def process_options(self):
@@ -57,7 +57,7 @@ class ClientHandler(object):
         while True:
             data = self.server.receive(self.clientsocket)
 
-            print("Received Data from: {id} --> {message}".format(id=data['id'], message=data['option_selected']))
+            print("(+) Received Data from: {id} --> {message}".format(id=data['id'], message=data['option_selected']))
             if ('option_selected' in data.keys()) and (1 <= data['option_selected'] <= 6): # validates a valid option selected
                 option = data['option_selected']
                 if option == 1:
@@ -85,6 +85,15 @@ class ClientHandler(object):
         :return: VOID
         """
         print("_send_user_list")
+        clients = []
+        for client in self.server.clients:
+            clients.append(client)
+        data = {
+            "id": self.client_id,
+            "message": "User List:",
+            "data": clients
+        }
+        self.server.send(self.clientsocket, data)
 
     def _save_message(self, recipient_id, message):
         """

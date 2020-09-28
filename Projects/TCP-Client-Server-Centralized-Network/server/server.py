@@ -22,7 +22,7 @@ from client_handler import ClientHandler
 class Server(object):
     MAX_NUM_CONN = 10
 
-    def __init__(self, ip_address='127.0.0.1', port=12000):
+    def __init__(self, ip_address='127.0.0.1', port=13000):
         """
         Class constructor
         :param ip_address:
@@ -127,7 +127,7 @@ class Server(object):
             # strip the data out of address
             server_ip = address[0]
             client_id = address[1]
-            print("- Accept Client: {id}".format(id=client_id))
+            print("\n- Accept Client: {id}".format(id=client_id))
 
             # create the client handler
             client_handler = ClientHandler(self, clientsocket, address)
