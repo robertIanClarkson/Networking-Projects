@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 #######################################################################
 # File:             client.py
 # Author:           Jose Ortiz
@@ -11,6 +12,7 @@
 ########################################################################
 import socket
 import pickle
+
 
 class Client(object):
     """
@@ -30,11 +32,10 @@ class Client(object):
         self.clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         self.clientid = 0
-        
+
     def get_client_id(self):
         return self.clientid
 
-    
     def connect(self, host="127.0.0.1", port=12000):
         """
         TODO: Connects to a server. Implements exception handler if connection is resetted. 
@@ -43,16 +44,25 @@ class Client(object):
         :param port: 
         :return: VOID
         """
-        pass
-		
-	
+        try:
+            self.clientSocket.connect((host, port))
+            print("Successfully conencted to server at {host}/{port}".format(host=host, port=port))
+        except Exception as e:
+            self.clientSocket.close()
+            raise Exception("ERROR: connect --> {exception}".format(exception=e))
+
     def send(self, data):
         """
         TODO: Serializes and then sends data to server
         :param data:
         :return:
         """
-        pass
+        try:
+            serialized_data = pickle.dumps(data)
+            self.clientsocket.send(serialized_data)
+        except Exception as e:
+            self.clientSocket.close()
+            raise Exception("ERROR: send --> {exception}".format(exception=e))
 
     def receive(self, MAX_BUFFER_SIZE=4090):
         """
@@ -60,17 +70,26 @@ class Client(object):
         :param MAX_BUFFER_SIZE: Max allowed allocated memory for this data
         :return: the deserialized data.
         """
-        return None
-        
+        try:
+            data_from_client = self.clientsocket.recv(MAX_BUFFER_SIZE)
+            data = pickle.loads(data_from_client)
+            return data
+        except Exception as e:
+            self.clientSocket.close()
+            raise Exception("ERROR: receive --> {exception}".format(exception=e))
+
 
     def close(self):
         """
         TODO: close the client socket
         :return: VOID
         """
-        pass
+        try:
+            self.clientSocket.close()
+        except Exception as e:
+            self.clientSocket.close()
+            raise Exception("ERROR: close --> {exception}".format(exception=e))
 
-		
 
 if __name__ == '__main__':
     client = Client()
