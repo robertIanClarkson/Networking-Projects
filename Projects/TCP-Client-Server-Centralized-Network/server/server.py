@@ -15,11 +15,14 @@ import socket
 from threading import Thread
 import pickle
 
-class Server(object):
 
+from client_handler import ClientHandler
+
+
+class Server(object):
     MAX_NUM_CONN = 10
 
-    def __init__(self, ip_address='127.0.0.1', port=12005):
+    def __init__(self, ip_address='127.0.0.1', port=12000):
         """
         Class constructor
         :param ip_address:
@@ -27,9 +30,18 @@ class Server(object):
         """
         # create an INET, STREAMing socket
         self.serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.clients = {} # dictionary of clients handlers objects handling clients. format {clientid:client_handler_object}
+        self.clients = {}  # dictionary of clients handlers objects handling clients. format {clientid:client_handler_object}
         # TODO: bind the socket to a public host, and a well-known port
+        self.host = ip_address
+        self.port = port
+        self._bind()
 
+    def _bind(self):
+        try:
+            self.serversocket.bind((self.host, self.port))
+        except Exception as e:
+            self.serversocket.close()
+            raise Exception("ERROR: _bind --> {exception}".format(exception=e))
 
     def _listen(self):
         """
@@ -38,9 +50,13 @@ class Server(object):
         i.e "Listening at 127.0.0.1/10000"
         :return: VOID
         """
-        #TODO: your code here
-        pass
-
+        # TODO: your code here
+        try:
+            self.serversocket.listen(self.MAX_NUM_CONN)
+            print("Server listening at {host}/{port}".format(host=self.host, port=self.port))
+        except Exception as e:
+            self.serversocket.close()
+            raise Exception("ERROR: _listen --> {exception}".format(exception=e))
 
     def _accept_clients(self):
         """
@@ -49,13 +65,15 @@ class Server(object):
         """
         while True:
             try:
-                #TODO: Accept a client
-                #TODO: Create a thread of this client using the client_handler_threaded class
-                pass
-            except:
-                #TODO: Handle exceptions
-                pass
-
+                # TODO: Accept a client
+                # TODO: Create a thread of this client using the client_handler_threaded class
+                clienthandler, addr = self.serversocket.accept()
+                # print(clienthandler, " | ", addr)
+                Thread(target=self.client_handler_thread, args=(clienthandler, addr)).start()
+            except Exception as e:
+                # TODO: Handle exceptions
+                self.serversocket.close()
+                raise Exception("ERROR: _accept_clients --> {exception}".format(exception=e))
 
     def send(self, clientsocket, data):
         """
@@ -64,8 +82,12 @@ class Server(object):
         :param data:
         :return:
         """
-        pass
-
+        try:
+            serialized_data = pickle.dumps(data)
+            clientsocket.send(serialized_data)
+        except Exception as e:
+            self.serversocket.close()
+            raise Exception("ERROR: send --> {exception}".format(exception=e))
 
     def receive(self, clientsocket, MAX_BUFFER_SIZE=4096):
         """
@@ -74,7 +96,13 @@ class Server(object):
         :param MAX_BUFFER_SIZE:
         :return: the deserialized data
         """
-        return None
+        try:
+            data_from_client = clientsocket.recv(MAX_BUFFER_SIZE)
+            data = pickle.loads(data_from_client)
+            return data
+        except Exception as e:
+            self.serversocket.close()
+            raise Exception("ERROR: receive --> {exception}".format(exception=e))
 
     def send_client_id(self, clientsocket, id):
         """
@@ -94,10 +122,18 @@ class Server(object):
         :param address:
         :return: a client handler object.
         """
-        self.send_client_id(clientsocket)
-        #TODO: create a new client handler object and return it
-        return None
-
+        try:
+            # self.send_client_id(clientsocket)
+            # TODO: create a new client handler object and return it
+            server_ip = address[0]
+            client_id = address[1]
+            client_handler = ClientHandler(self, clientsocket, address)
+            # client_handler.run()
+            self.clients[client_id] = client_handler
+            print(self.clients.keys())
+        except Exception as e:
+            self.serversocket.close()
+            raise Exception("ERROR: client_handler_thread --> ", e)
 
     def run(self):
         """
@@ -111,5 +147,3 @@ class Server(object):
 if __name__ == '__main__':
     server = Server()
     server.run()
-
-
