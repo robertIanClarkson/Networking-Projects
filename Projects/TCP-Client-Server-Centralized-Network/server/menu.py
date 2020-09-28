@@ -40,7 +40,7 @@ class Menu(object):
         TODO: 3. print the menu in client console.
         :return: VOID
         """
-        pass
+        print(self.get_menu())
 
     def process_user_data(self):
         """
@@ -78,8 +78,15 @@ class Menu(object):
         6. Disconnect from server
         :return: a string representing the above menu.
         """
-        menu = ""
-        # TODO: implement your code here
+        menu = "****** TCP CHAT ******\r\n" \
+               "-----------------------\r\n" \
+               "Options Available:\r\n" \
+               "1. Get user list\r\n" \
+               "2. Sent a message\r\n" \
+               "3. Get my messages\r\n" \
+               "4. Create a new channel\r\n" \
+               "5. Chat in a channel with your friends\r\n" \
+               "6. Disconnect from server"
         return menu
 
     def option1(self):
