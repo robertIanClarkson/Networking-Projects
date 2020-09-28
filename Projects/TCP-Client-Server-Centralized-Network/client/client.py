@@ -46,10 +46,16 @@ class Client(object):
         """
         try:
             self.clientSocket.connect((host, port))
-            print("Successfully conencted to server at {host}/{port}".format(host=host, port=port))
+            print("Successfully connected to server at {host}/{port}".format(host=host, port=port))
+            self.clientid = self.receive()['clientid']
+            print("Client ID: {id}".format(id=self.clientid))
         except Exception as e:
             self.clientSocket.close()
             raise Exception("ERROR: connect --> {exception}".format(exception=e))
+
+
+
+
 
     def send(self, data):
         """
@@ -59,7 +65,7 @@ class Client(object):
         """
         try:
             serialized_data = pickle.dumps(data)
-            self.clientsocket.send(serialized_data)
+            self.clientSocket.send(serialized_data)
         except Exception as e:
             self.clientSocket.close()
             raise Exception("ERROR: send --> {exception}".format(exception=e))
@@ -71,7 +77,7 @@ class Client(object):
         :return: the deserialized data.
         """
         try:
-            data_from_client = self.clientsocket.recv(MAX_BUFFER_SIZE)
+            data_from_client = self.clientSocket.recv(MAX_BUFFER_SIZE)
             data = pickle.loads(data_from_client)
             return data
         except Exception as e:
