@@ -82,7 +82,7 @@ class Menu(object):
                "-----------------------\r\n" \
                "Options Available:\r\n" \
                "1. Get user list\r\n" \
-               "2. Sent a message\r\n" \
+               "2. Send a message\r\n" \
                "3. Get my messages\r\n" \
                "4. Create a new channel\r\n" \
                "5. Chat in a channel with your friends\r\n" \

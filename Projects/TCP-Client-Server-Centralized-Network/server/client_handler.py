@@ -30,7 +30,7 @@ class ClientHandler(object):
         self.server = server_instance
         self.clientsocket = clientsocket
         self.server.send_client_id(self.clientsocket, self.client_id)
-        self.unreaded_messages = []
+        self.unread_messages = []
 
     def _sendMenu(self):
         """
@@ -103,14 +103,39 @@ class ClientHandler(object):
         :return: VOID
         """
         print("_save_message")
+        if recipient_id in self.server.clients:
+            recipient_handler = self.server.clients[recipient_id]
+            recipient_handler.unread_messages.append(message)
+            self.server.send(self.clientsocket, {
+                'id': self.client_id,
+                'message': "(+) Message Sent"
+            })
+        else:
+            print("(x) No user {id}".format(id=recipient_id))
+            self.server.send(self.clientsocket, {
+                'id': self.client_id,
+                'message': "(x) No user {id}".format(id=recipient_id)
+            })
 
     def _send_messages(self):
         """
-        TODO: send all the unreaded messages of this client. if non unread messages found, send an empty list.
+        TODO: send all the unread messages of this client. if non unread messages found, send an empty list.
         TODO: make sure to delete the messages from list once the client acknowledges that they were read.
         :return: VOID
         """
         print("_send_messages")
+        messages = []
+        for message in self.unread_messages:
+            messages.append(message)
+        try:
+            self.server.send(self.clientsocket, {
+                'id': self.client_id,
+                'message': messages
+            })
+            self.unread_messages.clear()
+        except Exception as e:
+            print("(x) Failed to get Messages from {id}".format(id=self.client_id))
+
 
     def _create_chat(self, room_id):
         """

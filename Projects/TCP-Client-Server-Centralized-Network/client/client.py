@@ -48,7 +48,7 @@ class Client(object):
             self.port = port
         self.name = input("Your id key (i.e your name): ")
         if self.name == "":
-            self.name = "undefined"
+            self.name = "anonymous"
 
     def connect(self, host="127.0.0.1", port=13000):
         """
@@ -115,12 +115,17 @@ class Client(object):
                 print(receiveData['message'])
                 if("data" in receiveData.keys()):
                     print(receiveData['data'])
-                option = input("\nYour option <enter a number>: ")
+                option = int(input("\nYour option <enter a number>: "))
                 # print("\nUser entered: {option}".format(option=option))
                 sendData = {
                     'id': self.clientid,
-                    'option_selected': int(option)
+                    'option_selected': option
                 }
+                if option == 2:
+                    sendData['recipient_id'] = int(input("\n--recepient--> "))
+                    sendData['message'] = input("--message--> ")
+                elif option == 4 or option == 5:
+                    sendData['room_id'] = input("--room--> ")
                 self.send(sendData)
             else:
                 print("ERROR: Wrong ID")
