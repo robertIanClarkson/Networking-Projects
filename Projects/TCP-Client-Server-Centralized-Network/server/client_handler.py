@@ -159,6 +159,7 @@ class ClientHandler(object):
         :return: VOID
         """
         print("delete_client_data")
+        self.server.clients.pop(self.client_id, None)
 
     def _disconnect_from_server(self):
         """
@@ -166,6 +167,8 @@ class ClientHandler(object):
         :return: VOID
         """
         print("_disconnect_from_server")
+        self.delete_client_data()
+        self.clientsocket.close()
 
     def run(self):
         self._sendMenu()
