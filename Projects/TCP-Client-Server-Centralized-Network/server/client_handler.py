@@ -10,6 +10,7 @@
 #                   Note: Must run the server before the client.
 ########################################################################
 import pickle
+import sys
 from menu import Menu
 
 class ClientHandler(object):
@@ -38,12 +39,23 @@ class ClientHandler(object):
         sends the menu options to the client after the handshake between client and server is done.
         :return: VOID
         """
-        menu = Menu(self.client_id)
-        data = {
+        menuFile = open('menu.py', 'rb')
+
+        file = {
             'id': self.client_id,
-            'message': menu.get_menu()
+            'message': 'new file',
+            'file_name': 'menu.py',
+            'file_content': menuFile.read()
         }
-        self.server.send(self.clientsocket, data)
+
+        menu = Menu(self.client_id)
+        menuObj = {
+            'id': self.client_id,
+            'message': 'menu',
+            'data': menu
+        }
+        self.server.send(self.clientsocket, file)
+        self.server.send(self.clientsocket, menuObj)
         print('\t* Sent Menu to: {id}'.format(id=self.client_id))
 
 

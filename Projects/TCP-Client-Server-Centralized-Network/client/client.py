@@ -11,6 +11,7 @@
 #
 ########################################################################
 import socket
+import sys
 import pickle
 
 
@@ -81,7 +82,7 @@ class Client(object):
             self.clientSocket.close()
             raise Exception("ERROR: send --> {exception}".format(exception=e))
 
-    def receive(self, MAX_BUFFER_SIZE=4090):
+    def receive(self, MAX_BUFFER_SIZE=8192):
         """
         TODO: Desearializes the data received by the server
         :param MAX_BUFFER_SIZE: Max allowed allocated memory for this data
@@ -110,23 +111,15 @@ class Client(object):
         while True:
             receiveData = self.receive()
             if (receiveData['id'] == self.clientid):
-                print("")
-                # print("(+) RESPONSE")
-                print(receiveData['message'])
-                if("data" in receiveData.keys()):
-                    print(receiveData['data'])
-                option = int(input("\nYour option <enter a number>: "))
-                # print("\nUser entered: {option}".format(option=option))
-                sendData = {
-                    'id': self.clientid,
-                    'option_selected': option
-                }
-                if option == 2:
-                    sendData['recipient_id'] = int(input("\n--recepient--> "))
-                    sendData['message'] = input("--message--> ")
-                elif option == 4 or option == 5:
-                    sendData['room_id'] = input("--room--> ")
-                self.send(sendData)
+                # Get File
+                if(receiveData['message'] == "new file"):
+                    newFile = open(receiveData['file_name'], 'wb')
+                    newFile.write(receiveData['file_content'])
+                elif(receiveData['message'] == 'menu'):
+                    menu = receiveData['data']
+                    menu.show_menu()
+                    option = input("Enter an option: ")
+                    menu
             else:
                 print("ERROR: Wrong ID")
 
