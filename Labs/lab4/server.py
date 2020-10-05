@@ -67,7 +67,7 @@ class Server(object):
         #  adds the client handler object to the list of all the clients objects created by this server.
         #  key: client id, value: client handler
         self.client_handlers[client_id] = client_handler  # assumes dict was initialized in class constructor
-        print(self.client_handlers.keys())
+        # print(self.client_handlers.keys())
 
     def _accept_clients(self):
         """
@@ -79,7 +79,7 @@ class Server(object):
                 clienthandler, addr = self.serversocket.accept()
                 self._send_clientid(clienthandler, addr[1])
                 # creeate new client thread.
-                print(clienthandler, " | ", addr)
+                # print(clienthandler, " | ", addr)
                 Thread(target=self.threaded_client, args=(clienthandler, addr)).start()
             except Exception as e:
                 print("ERROR: _accept_clients --> ", e)
