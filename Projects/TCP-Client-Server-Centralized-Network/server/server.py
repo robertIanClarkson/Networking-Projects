@@ -88,7 +88,7 @@ class Server(object):
             self.serversocket.close()
             raise Exception("ERROR: send --> {exception}".format(exception=e))
 
-    def receive(self, clientsocket, MAX_BUFFER_SIZE=4096):
+    def receive(self, clientsocket, MAX_BUFFER_SIZE=8192):
         """
         TODO: Deserializes the data with pickle
         :param clientsocket:
