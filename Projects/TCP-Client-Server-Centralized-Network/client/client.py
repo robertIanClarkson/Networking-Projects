@@ -35,7 +35,7 @@ class Client(object):
         self.port = None
         self.name = None
         self.clientid = 0
-        # self.menu = None
+        self.menu = None
 
     def get_client_id(self):
         return self.clientid
@@ -110,18 +110,17 @@ class Client(object):
     def run(self):
         while True:
             receiveData = self.receive()
-            if (receiveData['id'] == self.clientid):
-                # Get File
-                if(receiveData['message'] == "new file"):
-                    newFile = open(receiveData['file_name'], 'wb')
-                    newFile.write(receiveData['file_content'])
-                elif(receiveData['message'] == 'menu'):
-                    menu = receiveData['data']
-                    menu.show_menu()
-                    option = input("Enter an option: ")
-                    menu
-            else:
-                print("ERROR: Wrong ID")
+            # Get File
+            if(receiveData['message'] == "new file"):
+                newFile = open(receiveData['file_name'], 'wb')
+                newFile.write(receiveData['file_content'])
+            elif(receiveData['message'] == 'menu'):
+                self.menu = receiveData['menu']
+                self.menu.set_client(self)
+                self.menu.show_menu()
+                self.send(self.menu.process_user_data())
+            # elif(receiveData['message'] == 'hello'):
+            #     self.menu
 
 
 if __name__ == '__main__':

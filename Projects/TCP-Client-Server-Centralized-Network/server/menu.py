@@ -53,16 +53,30 @@ class Menu(object):
         if 1 <= option <= 6: # validates a valid option
            # TODO: implement your code here
            # (i,e  algo: if option == 1, then data = self.menu.option1, then. send request to server with the data)
-           pass
+           if(option == 1):
+               return self.option1()
+           elif (option == 2):
+               return self.option2()
+           elif (option == 3):
+               return self.option3()
+           elif (option == 4):
+               return self.option4()
+           elif (option == 5):
+               return self.option5()
+           elif (option == 6):
+               return self.option6()
+        else:
+            print('INVALID OPTION')
+            return self.process_user_data()
 
     def option_selected(self):
         """
         TODO: takes the option selected by the user in the menu
         :return: the option selected.
         """
-        option = 0
         # TODO: your code here.
-        return option
+        option = input('\nYour option <enter a number>: ')
+        return int(option)
 
     def get_menu(self):
         """

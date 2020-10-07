@@ -42,7 +42,6 @@ class ClientHandler(object):
         menuFile = open('menu.py', 'rb')
 
         file = {
-            'id': self.client_id,
             'message': 'new file',
             'file_name': 'menu.py',
             'file_content': menuFile.read()
@@ -50,9 +49,8 @@ class ClientHandler(object):
 
         menu = Menu(self.client_id)
         menuObj = {
-            'id': self.client_id,
             'message': 'menu',
-            'data': menu
+            'menu': menu
         }
         self.server.send(self.clientsocket, file)
         self.server.send(self.clientsocket, menuObj)
@@ -101,7 +99,6 @@ class ClientHandler(object):
         for client in self.server.clients:
             clients.append(client)
         data = {
-            "id": self.client_id,
             "message": "User List:",
             "data": clients
         }
