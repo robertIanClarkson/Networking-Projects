@@ -10,6 +10,7 @@
 #                   Note: Must run the server before the client.
 ########################################################################
 import pickle
+import datetime
 from menu import Menu
 
 class ClientHandler(object):
@@ -71,7 +72,7 @@ class ClientHandler(object):
                 if option == 1:
                     self._send_user_list()
                 elif option == 2:
-                    recipient_id = data['recipient_id']
+                    recipient_id = data['id']
                     message = data['message']
                     self._save_message(recipient_id, message)
                 elif option == 3:
@@ -108,18 +109,16 @@ class ClientHandler(object):
         :param message:
         :return: VOID
         """
-        print("_save_message")
+        # print("_save_message")
         if recipient_id in self.server.clients:
             recipient_handler = self.server.clients[recipient_id]
-            recipient_handler.unread_messages.append(message)
+            recipient_handler.unread_messages.append((datetime.datetime.now(), message))
             self.server.send(self.clientsocket, {
-                'id': self.client_id,
                 'message': "(+) Message Sent"
             })
         else:
             print("(x) No user {id}".format(id=recipient_id))
             self.server.send(self.clientsocket, {
-                'id': self.client_id,
                 'message': "(x) No user {id}".format(id=recipient_id)
             })
 

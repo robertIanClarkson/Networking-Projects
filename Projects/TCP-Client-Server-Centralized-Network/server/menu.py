@@ -48,18 +48,21 @@ class Menu(object):
         :param option:
         :return: VOID
         """
-        # data = {}
+        data = {}
         option = self.option_selected()
         if 1 <= option <= 6:  # validates a valid option
             # TODO: implement your code here
             # (i,e  algo: if option == 1, then data = self.menu.option1, then. send request to server with the data)
             if(option == 1):
-                send_data = self.option1()
-                self.client.send(send_data)
+                data = self.option1()
+                self.client.send(data)
                 data = self.client.receive()
                 print(data['message'])
             elif (option == 2):
-                self.option2()
+                data = self.option2()
+                self.client.send(data)
+                data = self.client.receive()
+                print(data['message'])
             elif (option == 3):
                 return self.option3()
             elif (option == 4):
@@ -126,6 +129,8 @@ class Menu(object):
         data = {}
         data['option'] = 2
         # Your code here.
+        data['message'] = input("Enter your message: ")
+        data['id'] = int(input("Enter recipient id: "))
         return data
 
     def option3(self):
