@@ -82,6 +82,7 @@ class Server(object):
         :return:
         """
         try:
+            # print(data)
             serialized_data = pickle.dumps(data)
             clientsocket.send(serialized_data)
         except Exception as e:

@@ -10,7 +10,6 @@
 #                   Note: Must run the server before the client.
 ########################################################################
 import pickle
-import sys
 from menu import Menu
 
 class ClientHandler(object):
@@ -68,8 +67,8 @@ class ClientHandler(object):
             data = self.server.receive(self.clientsocket)
 
             print("(+) Received Data from: {id} --> {message}".format(id=self.client_id, message=data['option']))
-            if ('option_selected' in data.keys()) and (1 <= data['option_selected'] <= 6): # validates a valid option selected
-                option = data['option_selected']
+            if ('option' in data.keys()) and (1 <= data['option'] <= 6): # validates a valid option selected
+                option = data['option']
                 if option == 1:
                     self._send_user_list()
                 elif option == 2:
@@ -94,9 +93,9 @@ class ClientHandler(object):
         TODO: send the list of users (clients ids) that are connected to this server.
         :return: VOID
         """
-        print("_send_user_list")
+        # print("_send_user_list")
         clients = []
-        for client in self.server.clients:
+        for client in self.server.clients.keys():
             clients.append(client)
         data = {
             "message": "User List:",

@@ -11,7 +11,6 @@
 #
 ########################################################################
 import socket
-import sys
 import pickle
 
 
@@ -108,19 +107,23 @@ class Client(object):
             raise Exception("ERROR: close --> {exception}".format(exception=e))
 
     def run(self):
+        receiveData = self.receive()
+        
+        # get the file
+        newFile = open(receiveData['file_name'], 'wb')
+        newFile.write(receiveData['file_content'])
+        
+        # get the menu object
+        receiveData = self.receive()
+        self.menu = receiveData['menu']
+        self.menu.set_client(self)
+        
+        # communicate
         while True:
-            receiveData = self.receive()
-            # Get File
-            if(receiveData['message'] == "new file"):
-                newFile = open(receiveData['file_name'], 'wb')
-                newFile.write(receiveData['file_content'])
-            elif(receiveData['message'] == 'menu'):
-                self.menu = receiveData['menu']
-                self.menu.set_client(self.clientSocket)
-                self.menu.show_menu()
-                self.send(self.menu.process_user_data())
-            # elif(receiveData['message'] == 'hello'):
-            #     self.menu
+            self.menu.show_menu()
+            self.menu.process_user_data()
+
+            
 
 
 if __name__ == '__main__':
