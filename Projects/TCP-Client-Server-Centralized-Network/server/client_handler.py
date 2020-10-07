@@ -92,13 +92,12 @@ class ClientHandler(object):
         TODO: send the list of users (clients ids) that are connected to this server.
         :return: VOID
         """
-        # print("_send_user_list")
-        clients = []
+        message = "Users in server:"
         for client in self.server.clients.keys():
-            clients.append((client, self.server.names[client]))
+            message += " {name}:{id},".format(name=self.server.names[client], id=client)
+            message = message.rstrip(',')
         data = {
-            "message": "User List:",
-            "clients": clients
+            "message": message
         }
         self.server.send(self.clientsocket, data)
 

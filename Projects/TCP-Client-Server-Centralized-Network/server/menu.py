@@ -57,10 +57,7 @@ class Menu(object):
                 send_data = self.option1()
                 self.client.send(send_data)
                 data = self.client.receive()
-                print('\n', data['message'])
-                for client in data['clients']:
-                    print('\t* ', client)
-                print()
+                print(data['message'])
             elif (option == 2):
                 self.option2()
             elif (option == 3):
@@ -98,7 +95,7 @@ class Menu(object):
         6. Disconnect from server
         :return: a string representing the above menu.
         """
-        menu = "****** TCP CHAT ******\r\n" \
+        menu = "\n****** TCP CHAT ******\r\n" \
                "-----------------------\r\n" \
                "Options Available:\r\n" \
                "1. Get user list\r\n" \
