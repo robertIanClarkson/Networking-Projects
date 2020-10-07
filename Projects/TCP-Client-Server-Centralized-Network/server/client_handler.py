@@ -112,7 +112,7 @@ class ClientHandler(object):
         # print("_save_message")
         if recipient_id in self.server.clients:
             recipient_handler = self.server.clients[recipient_id]
-            recipient_handler.unread_messages.append((datetime.datetime.now(), message))
+            recipient_handler.unread_messages.append((datetime.datetime.now(), message, self.server.names[self.client_id]))
             self.server.send(self.clientsocket, {
                 'message': "(+) Message Sent"
             })
@@ -128,14 +128,12 @@ class ClientHandler(object):
         TODO: make sure to delete the messages from list once the client acknowledges that they were read.
         :return: VOID
         """
-        print("_send_messages")
-        messages = []
-        for message in self.unread_messages:
-            messages.append(message)
+        message = "My messages:"
+        for msg in self.unread_messages:
+            message += "\n{date}: {sent} (from: {sender})".format(date=msg[0], sent=msg[1], sender=msg[2])
         try:
             self.server.send(self.clientsocket, {
-                'id': self.client_id,
-                'message': messages
+                'message': message
             })
             self.unread_messages.clear()
         except Exception as e:

@@ -55,22 +55,19 @@ class Menu(object):
             # (i,e  algo: if option == 1, then data = self.menu.option1, then. send request to server with the data)
             if(option == 1):
                 data = self.option1()
-                self.client.send(data)
-                data = self.client.receive()
-                print(data['message'])
             elif (option == 2):
                 data = self.option2()
-                self.client.send(data)
-                data = self.client.receive()
-                print(data['message'])
             elif (option == 3):
-                return self.option3()
+                data = self.option3()
             elif (option == 4):
                 return self.option4()
             elif (option == 5):
                 return self.option5()
             elif (option == 6):
                 return self.option6()
+            self.client.send(data)
+            data = self.client.receive()
+            print(data['message'])
         else:
             print('INVALID OPTION')
             return self.process_user_data()
