@@ -30,6 +30,7 @@ class Server(object):
         """
         # create an INET, STREAMing socket
         self.serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.names = {}
         self.clients = {}  # dictionary of clients handlers objects handling clients. format {clientid:client_handler_object}
         # TODO: bind the socket to a public host, and a well-known port
         self.host = ip_address
@@ -130,15 +131,22 @@ class Server(object):
             client_id = address[1]
             print("\n(+) Accept Client: {id}".format(id=client_id))
 
+            # send the client id
+            self.send_client_id(clientsocket, client_id)
+
+            # get the client name
+            name = self.receive(clientsocket)
+
             # create the client handler
             client_handler = ClientHandler(self, clientsocket, address)
 
             # notify the server user
             if client_id not in self.clients:
-                print("\t* New Client")
+                print("\t* New Client ")
             else:
-                print("\t* Old Client")
+                print("\t* Old Client ")
             self.clients[client_id] = client_handler
+            self.names[client_id] = name
             print("\t* Client List:")
             for client in self.clients:
                 print("\t\t- {client}".format(client=client))

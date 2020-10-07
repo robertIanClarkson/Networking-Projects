@@ -29,7 +29,6 @@ class ClientHandler(object):
         self.client_id = addr[1]
         self.server = server_instance
         self.clientsocket = clientsocket
-        self.server.send_client_id(self.clientsocket, self.client_id)
         self.unread_messages = []
 
     def _sendMenu(self):
@@ -96,10 +95,10 @@ class ClientHandler(object):
         # print("_send_user_list")
         clients = []
         for client in self.server.clients.keys():
-            clients.append(client)
+            clients.append((client, self.server.names[client]))
         data = {
             "message": "User List:",
-            "data": clients
+            "clients": clients
         }
         self.server.send(self.clientsocket, data)
 

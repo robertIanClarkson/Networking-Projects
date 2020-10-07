@@ -48,30 +48,32 @@ class Menu(object):
         :param option:
         :return: VOID
         """
-        data = {}
+        # data = {}
         option = self.option_selected()
-        if 1 <= option <= 6: # validates a valid option
-           # TODO: implement your code here
-           # (i,e  algo: if option == 1, then data = self.menu.option1, then. send request to server with the data)
-           if(option == 1):
-               send_data = self.option1()
-               self.client.send(send_data)
-               rec_data = self.client.receive()
-               print(rec_data)
-           elif (option == 2):
-               return self.option2()
-           elif (option == 3):
-               return self.option3()
-           elif (option == 4):
-               return self.option4()
-           elif (option == 5):
-               return self.option5()
-           elif (option == 6):
-               return self.option6()
+        if 1 <= option <= 6:  # validates a valid option
+            # TODO: implement your code here
+            # (i,e  algo: if option == 1, then data = self.menu.option1, then. send request to server with the data)
+            if(option == 1):
+                send_data = self.option1()
+                self.client.send(send_data)
+                data = self.client.receive()
+                print('\n', data['message'])
+                for client in data['clients']:
+                    print('\t* ', client)
+                print()
+            elif (option == 2):
+                self.option2()
+            elif (option == 3):
+                return self.option3()
+            elif (option == 4):
+                return self.option4()
+            elif (option == 5):
+                return self.option5()
+            elif (option == 6):
+                return self.option6()
         else:
             print('INVALID OPTION')
             return self.process_user_data()
-        
 
     def option_selected(self):
         """
