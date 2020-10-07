@@ -127,7 +127,7 @@ class Server(object):
             # strip the data out of address
             server_ip = address[0]
             client_id = address[1]
-            print("\n- Accept Client: {id}".format(id=client_id))
+            print("\n(+) Accept Client: {id}".format(id=client_id))
 
             # create the client handler
             client_handler = ClientHandler(self, clientsocket, address)

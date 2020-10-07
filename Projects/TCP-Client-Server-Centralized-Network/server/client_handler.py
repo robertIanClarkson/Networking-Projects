@@ -39,12 +39,12 @@ class ClientHandler(object):
         sends the menu options to the client after the handshake between client and server is done.
         :return: VOID
         """
-        menuFile = open('menu.py', 'rb')
+        fp = open('menu.py', 'rb')
 
-        file = {
+        menuFile = {
             'message': 'new file',
             'file_name': 'menu.py',
-            'file_content': menuFile.read()
+            'file_content': fp.read()
         }
 
         menu = Menu(self.client_id)
@@ -52,7 +52,7 @@ class ClientHandler(object):
             'message': 'menu',
             'menu': menu
         }
-        self.server.send(self.clientsocket, file)
+        self.server.send(self.clientsocket, menuFile)
         self.server.send(self.clientsocket, menuObj)
         print('\t* Sent Menu to: {id}'.format(id=self.client_id))
 
@@ -67,7 +67,7 @@ class ClientHandler(object):
         while True:
             data = self.server.receive(self.clientsocket)
 
-            print("(+) Received Data from: {id} --> {message}".format(id=data['id'], message=data['option_selected']))
+            print("(+) Received Data from: {id} --> {message}".format(id=self.client_id, message=data['option']))
             if ('option_selected' in data.keys()) and (1 <= data['option_selected'] <= 6): # validates a valid option selected
                 option = data['option_selected']
                 if option == 1:

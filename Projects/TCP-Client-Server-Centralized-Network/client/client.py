@@ -116,7 +116,7 @@ class Client(object):
                 newFile.write(receiveData['file_content'])
             elif(receiveData['message'] == 'menu'):
                 self.menu = receiveData['menu']
-                self.menu.set_client(self)
+                self.menu.set_client(self.clientSocket)
                 self.menu.show_menu()
                 self.send(self.menu.process_user_data())
             # elif(receiveData['message'] == 'hello'):
