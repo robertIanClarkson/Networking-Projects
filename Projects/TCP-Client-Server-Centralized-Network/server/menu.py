@@ -60,7 +60,7 @@ class Menu(object):
             elif (option == 3):
                 data = self.option3()
             elif (option == 4):
-                return self.option4()
+                data = self.option4()
             elif (option == 5):
                 return self.option5()
             elif (option == 6):
@@ -150,6 +150,7 @@ class Menu(object):
         data = {}
         data['option'] = 4
         # Your code here.
+        data['room_id'] = int(input("Enter new chat room id: "))
         return data
 
     def option5(self):

@@ -112,7 +112,8 @@ class ClientHandler(object):
         # print("_save_message")
         if recipient_id in self.server.clients:
             recipient_handler = self.server.clients[recipient_id]
-            recipient_handler.unread_messages.append((datetime.datetime.now(), message, self.server.names[self.client_id]))
+            currentDatetime = datetime.datetime.now().replace(second=0, microsecond=0)
+            recipient_handler.unread_messages.append((currentDatetime, message, self.server.names[self.client_id]))
             self.server.send(self.clientsocket, {
                 'message': "(+) Message Sent"
             })
@@ -147,6 +148,11 @@ class ClientHandler(object):
         :return: VOID
         """
         print("_create_chat")
+        name = self.server.names[self.client_id]
+        message = "----------------------- Chat Room {room_id} ------------------------ \r\n\r\nType \'exit\' to close the chat room.\r\nChat room created by: {name}\r\nWaiting for other users to join....".format(room_id=room_id, name=name)
+        self.server.send(self.clientsocket, {
+            'message': message
+        })
 
     def _join_chat(self, room_id):
         """
