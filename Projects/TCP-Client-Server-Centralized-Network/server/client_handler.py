@@ -154,6 +154,7 @@ class ClientHandler(object):
             'message': message
         })
 
+
     def _join_chat(self, room_id):
         """
         TODO: join a chat in a existing room
