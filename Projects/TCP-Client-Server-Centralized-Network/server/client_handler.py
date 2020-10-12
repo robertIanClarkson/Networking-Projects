@@ -160,8 +160,7 @@ class ClientHandler(object):
             recvMessage = self.server.receive(self.clientsocket)
             for client_id in self.server.rooms[room_id]:
                 clientHandler = self.server.clients[client_id]
-                data['message'] = recvMessage
-                self.server.send(clientHandler.clientsocket, data)
+                self.server.send(clientHandler.clientsocket, recvMessage)
 
 
 

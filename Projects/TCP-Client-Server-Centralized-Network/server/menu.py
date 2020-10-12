@@ -164,19 +164,9 @@ class Menu(object):
         print(roomTitle)
 
         # basically I just need to figure out how to take input and print at the same time
-        # Thread(target=self.chatSend(), args=()).start()
-        # Thread(target=self.chatRecv(), args=()).start()
-
-        while True:
-            recv = self.client.receive()['message']
-            print(recv)
-
-        # while True:
-        #     # recv = self.client.receive()
-        #     # print(recv)
-        #     send = input("> ")
-        #     if send == "exit":
-        #         break
+        # self.chatRecv()
+        Thread(target=self.chatSend(), args=()).start()
+        Thread(target=self.chatRecv(), args=()).start()
 
     def option5(self):
         """
@@ -192,16 +182,9 @@ class Menu(object):
         roomTitle = self.client.receive()['message']
         print(roomTitle)
 
-        sendData = {}
-        while True:
-            newMessage = input('> ')
-            if newMessage == 'exit':
-                break
-            sendData['message'] = "{name}> {message}".format(name=self.client.name, message=newMessage)
-            self.client.send(sendData)
-
-        # Thread(target=self.chatSend(), args=()).start()
-        # Thread(target=self.chatRecv(), args=()).start()
+        # self.chatSend()
+        Thread(target=self.chatSend(), args=()).start()
+        Thread(target=self.chatRecv(), args=()).start()
 
     def option6(self):
         """
@@ -216,13 +199,14 @@ class Menu(object):
 
     def chatRecv(self):
         while True:
-            data = self.client.receive()
-            print(data)
+            recv = self.client.receive()['message']
+            print(recv)
 
     def chatSend(self):
-        data = {}
+        sendData = {}
         while True:
-            data['message'] = input('> ')
-            self.client.send(data)
-            if data['message'] == 'exit':
+            newMessage = input('> ')
+            if newMessage == 'exit':
                 break
+            sendData['message'] = "{name}> {message}".format(name=self.client.name, message=newMessage)
+            self.client.send(sendData)
