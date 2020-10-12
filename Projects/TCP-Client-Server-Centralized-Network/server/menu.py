@@ -163,10 +163,7 @@ class Menu(object):
         roomTitle = self.client.receive()['message']
         print(roomTitle)
 
-        # basically I just need to figure out how to take input and print at the same time
-        # self.chatRecv()
-        Thread(target=self.chatSend(), args=()).start()
-        Thread(target=self.chatRecv(), args=()).start()
+        self.chat()
 
     def option5(self):
         """
@@ -182,9 +179,7 @@ class Menu(object):
         roomTitle = self.client.receive()['message']
         print(roomTitle)
 
-        # self.chatSend()
-        Thread(target=self.chatSend(), args=()).start()
-        Thread(target=self.chatRecv(), args=()).start()
+        self.chat()
 
     def option6(self):
         """
@@ -197,6 +192,10 @@ class Menu(object):
         # Your code here.
         return data
 
+    def chat(self):
+        Thread(target=self.chatRecv, args=()).start()
+        self.chatSend()
+
     def chatRecv(self):
         while True:
             recv = self.client.receive()['message']
@@ -205,7 +204,7 @@ class Menu(object):
     def chatSend(self):
         sendData = {}
         while True:
-            newMessage = input('> ')
+            newMessage = input()
             if newMessage == 'exit':
                 break
             sendData['message'] = "{name}> {message}".format(name=self.client.name, message=newMessage)
