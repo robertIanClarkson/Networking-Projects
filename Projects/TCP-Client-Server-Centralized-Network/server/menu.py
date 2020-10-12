@@ -167,8 +167,9 @@ class Menu(object):
         # Thread(target=self.chatSend(), args=()).start()
         # Thread(target=self.chatRecv(), args=()).start()
 
-        recv = self.client.receive()['message']
-        print(recv)
+        while True:
+            recv = self.client.receive()['message']
+            print(recv)
 
         # while True:
         #     # recv = self.client.receive()
@@ -190,6 +191,14 @@ class Menu(object):
 
         roomTitle = self.client.receive()['message']
         print(roomTitle)
+
+        sendData = {}
+        while True:
+            newMessage = input('> ')
+            if newMessage == 'exit':
+                break
+            sendData['message'] = "{name}> {message}".format(name=self.client.name, message=newMessage)
+            self.client.send(sendData)
 
         # Thread(target=self.chatSend(), args=()).start()
         # Thread(target=self.chatRecv(), args=()).start()

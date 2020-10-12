@@ -182,17 +182,16 @@ class ClientHandler(object):
         name = self.server.names[self.client_id]
         for client_id in self.server.rooms[room_id]:
             clientHandler = self.server.clients[client_id]
-            data['message'] = "'{name}' joined".format(name=name)
+            data['message'] = "{name} joined".format(name=name)
             self.server.send(clientHandler.clientsocket, data)
 
-
-        # data = {}
-        # while True:
-        #     recvMessage = self.server.receive(self.clientsocket)
-        #     for client_id in self.server.rooms[room_id]:
-        #         clientHandler = self.server.clients[client_id]
-        #         data['message'] = recvMessage
-        #         self.server.send(clientHandler.clientsocket, data)
+        data = {}
+        while True:
+            recvMessage = self.server.receive(self.clientsocket)
+            for client_id in self.server.rooms[room_id]:
+                clientHandler = self.server.clients[client_id]
+                # data['message'] = recvMessage
+                self.server.send(clientHandler.clientsocket, recvMessage)
 
     def delete_client_data(self):
         """
