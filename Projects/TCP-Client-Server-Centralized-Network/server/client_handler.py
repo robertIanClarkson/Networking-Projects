@@ -149,10 +149,20 @@ class ClientHandler(object):
         """
         print("_create_chat")
         name = self.server.names[self.client_id]
+        self.server.rooms[room_id] = [self.client_id]
         message = "----------------------- Chat Room {room_id} ------------------------ \r\n\r\nType \'exit\' to close the chat room.\r\nChat room created by: {name}\r\nWaiting for other users to join....".format(room_id=room_id, name=name)
         self.server.send(self.clientsocket, {
             'message': message
         })
+
+        data = {}
+        while True:
+            recvMessage = self.server.receive(self.clientsocket)
+            for client_id in self.server.rooms[room_id]:
+                clientHandler = self.server.clients[client_id]
+                data['message'] = recvMessage
+                self.server.send(clientHandler.clientsocket, data)
+
 
 
     def _join_chat(self, room_id):
@@ -162,6 +172,27 @@ class ClientHandler(object):
         :return: VOID
         """
         print("_join_chat")
+        self.server.rooms[room_id].append(self.client_id)
+        message = "----------------------- Chat Room {room_id} ------------------------\r\nJoined to chat room {room_id}\r\nType 'bye' to exit this chat room.".format(room_id=room_id)
+        self.server.send(self.clientsocket, {
+            'message': message
+        })
+
+        data = {}
+        name = self.server.names[self.client_id]
+        for client_id in self.server.rooms[room_id]:
+            clientHandler = self.server.clients[client_id]
+            data['message'] = "'{name}' joined".format(name=name)
+            self.server.send(clientHandler.clientsocket, data)
+
+
+        # data = {}
+        # while True:
+        #     recvMessage = self.server.receive(self.clientsocket)
+        #     for client_id in self.server.rooms[room_id]:
+        #         clientHandler = self.server.clients[client_id]
+        #         data['message'] = recvMessage
+        #         self.server.send(clientHandler.clientsocket, data)
 
     def delete_client_data(self):
         """

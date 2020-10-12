@@ -164,8 +164,11 @@ class Menu(object):
         print(roomTitle)
 
         # basically I just need to figure out how to take input and print at the same time
-        Thread(target=self.chatSend(), args=()).start()
-        Thread(target=self.chatRecv(), args=()).start()
+        # Thread(target=self.chatSend(), args=()).start()
+        # Thread(target=self.chatRecv(), args=()).start()
+
+        recv = self.client.receive()['message']
+        print(recv)
 
         # while True:
         #     # recv = self.client.receive()
@@ -173,6 +176,34 @@ class Menu(object):
         #     send = input("> ")
         #     if send == "exit":
         #         break
+
+    def option5(self):
+        """
+        TODO: Prepare the user input data for option 5 in the menu
+        :param option:
+        :return: a python dictionary with all the data needed from user in option 5.
+        """
+        data = {}
+        data['option'] = 5
+        data['room_id'] = int(input("Enter chat room id to join: "))
+        self.client.send(data)
+
+        roomTitle = self.client.receive()['message']
+        print(roomTitle)
+
+        # Thread(target=self.chatSend(), args=()).start()
+        # Thread(target=self.chatRecv(), args=()).start()
+
+    def option6(self):
+        """
+        TODO: Prepare the user input data for option 6 in the menu
+        :param option:
+        :return: a python dictionary with all the data needed from user in option 6.
+        """
+        data = {}
+        data['option'] = 6
+        # Your code here.
+        return data
 
     def chatRecv(self):
         while True:
@@ -186,31 +217,3 @@ class Menu(object):
             self.client.send(data)
             if data['message'] == 'exit':
                 break
-
-    def option5(self):
-        """
-        TODO: Prepare the user input data for option 5 in the menu
-        :param option:
-        :return: a python dictionary with all the data needed from user in option 5.
-        """
-        data = {}
-        data['option'] = 5
-        data['room_id'] = int(input("Enter chat room id to join: "))
-        self.client.send(data)
-
-        roomTitle = self.client.receive()
-        print(roomTitle)
-
-        Thread(target=self.chatRecv(), args=()).start()
-        Thread(target=self.chatSend(), args=()).start()
-
-    def option6(self):
-        """
-        TODO: Prepare the user input data for option 6 in the menu
-        :param option:
-        :return: a python dictionary with all the data needed from user in option 6.
-        """
-        data = {}
-        data['option'] = 6
-        # Your code here.
-        return data
