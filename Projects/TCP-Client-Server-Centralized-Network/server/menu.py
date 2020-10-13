@@ -16,6 +16,7 @@
 
 from threading import Thread
 
+
 class Menu(object):
     """
     This class handles all the actions related to the user menu.
@@ -55,7 +56,7 @@ class Menu(object):
         if 1 <= option <= 6:  # validates a valid option
             # TODO: implement your code here
             # (i,e  algo: if option == 1, then data = self.menu.option1, then. send request to server with the data)
-            if(option == 1):
+            if (option == 1):
                 data = self.option1()
             elif (option == 2):
                 data = self.option2()

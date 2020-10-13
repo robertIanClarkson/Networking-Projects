@@ -110,22 +110,20 @@ class Client(object):
 
     def run(self):
         receiveData = self.receive()
-        
+
         # get the file
         newFile = open(receiveData['file_name'], 'wb')
         newFile.write(receiveData['file_content'])
-        
+
         # get the menu object
         receiveData = self.receive()
         self.menu = receiveData['menu']
         self.menu.set_client(self)
-        
+
         # communicate
         while True:
             self.menu.show_menu()
             self.menu.process_user_data()
-
-            
 
 
 if __name__ == '__main__':

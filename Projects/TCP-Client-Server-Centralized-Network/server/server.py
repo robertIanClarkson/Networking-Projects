@@ -9,15 +9,10 @@
 #                   Python 3: python3 server.py
 #                   Note: Must run the server before the client.
 ########################################################################
-
 from builtins import object
 import socket
 from threading import Thread
-import pickle
-
-
 from client_handler import ClientHandler
-
 
 class Server(object):
     MAX_NUM_CONN = 10
@@ -39,7 +34,6 @@ class Server(object):
         # TODO: bind the socket to a public host, and a well-known port
         self.host = ip_address
         self.port = port
-        self._bind()
 
     def _bind(self):
         try:
@@ -79,45 +73,6 @@ class Server(object):
                 self.serversocket.close()
                 raise Exception("ERROR: _accept_clients --> {exception}".format(exception=e))
 
-    def send(self, clientsocket, data):
-        """
-        TODO: Serializes the data with pickle, and sends using the accepted client socket.
-        :param clientsocket:
-        :param data:
-        :return:
-        """
-        try:
-            # print(data)
-            serialized_data = pickle.dumps(data)
-            clientsocket.send(serialized_data)
-        except Exception as e:
-            self.serversocket.close()
-            raise Exception("ERROR: send --> {exception}".format(exception=e))
-
-    def receive(self, clientsocket, MAX_BUFFER_SIZE=8192):
-        """
-        TODO: Deserializes the data with pickle
-        :param clientsocket:
-        :param MAX_BUFFER_SIZE:
-        :return: the deserialized data
-        """
-        try:
-            data_from_client = clientsocket.recv(MAX_BUFFER_SIZE)
-            data = pickle.loads(data_from_client)
-            return data
-        except Exception as e:
-            self.serversocket.close()
-            raise Exception("ERROR: receive --> {exception}".format(exception=e))
-
-    def send_client_id(self, clientsocket, id):
-        """
-        Already implemented for you
-        :param clientsocket:
-        :return:
-        """
-        clientid = {'clientid': id}
-        self.send(clientsocket, clientid)
-
     def client_handler_thread(self, clientsocket, address):
         """
         Sends the client id assigned to this clientsocket and
@@ -129,34 +84,15 @@ class Server(object):
         """
         try:
             # TODO: create a new client handler object and return it
-
-            # strip the data out of address
-            server_ip = address[0]
-            client_id = address[1]
-            print("\n(+) Accept Client: {id}".format(id=client_id))
-
-            # send the client id
-            self.send_client_id(clientsocket, client_id)
-
-            # get the client name
-            name = self.receive(clientsocket)
-
             # create the client handler
             client_handler = ClientHandler(self, clientsocket, address)
 
-            # notify the server user
-            if client_id not in self.clients:
-                print("\t* New Client ")
-            else:
-                print("\t* Old Client ")
-            self.clients[client_id] = client_handler
-            self.names[client_id] = name
-            print("\t* Client List:")
-            for client in self.clients:
-                print("\t\t- {client}".format(client=client))
+            # init the CH
+            client_handler.init()
 
-            # run the client handler
+            # run the main logic
             client_handler.run()
+
         except Exception as e:
             self.serversocket.close()
             raise Exception("ERROR: client_handler_thread --> ", e)
@@ -166,9 +102,9 @@ class Server(object):
         Already implemented for you. Runs this client
         :return: VOID
         """
+        self._bind()
         self._listen()
         self._accept_clients()
-
 
 if __name__ == '__main__':
     server = Server()
