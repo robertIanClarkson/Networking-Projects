@@ -18,7 +18,7 @@ Robert Clarkson
 | Lab 7                        | not completed |
 | Lab 8                        | not completed |
 | Lab 9                        | not completed |
-| TCP Client/Server Network    | not completed |
+| TCP Client/Server Network    | completed     |
 | P2P Decentralized Network    | not completed |
 | Routing Protocol (EC)        | not completed |
 
