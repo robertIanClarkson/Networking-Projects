@@ -63,9 +63,10 @@ class Client(object):
             self.clientSocket.connect((host, port))
             print("\nSuccessfully connected to server at {host}/{port}".format(host=host, port=port))
             self.clientid = self.receive()['clientid']
-            print("Client ID: {id}".format(id=self.clientid))
             self.send(self.name)
-            print("Sent name: {name}".format(name=self.name))
+            print("Your client info is:")
+            print("Client Name: {name}".format(name=self.name))
+            print("Client ID: {id}".format(id=self.clientid))
         except Exception as e:
             self.clientSocket.close()
             raise Exception("ERROR: connect --> {exception}".format(exception=e))

@@ -75,7 +75,7 @@ class ClientHandler(object):
             data = self.receive()
 
             self.thread_print(
-                "(+) Received Data from: {id} --> {message}".format(id=self.client_id, message=data['option']))
+                "(+) Received Data from: {id} --> option {message}".format(id=self.client_id, message=data['option']))
             if ('option' in data.keys()) and (1 <= data['option'] <= 6):  # validates a valid option selected
                 option = data['option']
                 if option == 1:
@@ -106,7 +106,7 @@ class ClientHandler(object):
         message = "Users in server:"
         for client in self.server.clients.keys():
             message += " {name}:{id},".format(name=self.server.names[client], id=client)
-            message = message.rstrip(',')
+        message = message.rstrip(',')
         self.clients_lock.release()
         data = {
             "message": message
