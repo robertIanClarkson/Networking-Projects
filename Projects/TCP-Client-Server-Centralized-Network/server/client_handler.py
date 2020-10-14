@@ -94,6 +94,7 @@ class ClientHandler(object):
                     self._join_chat(room_id)
                 elif option == 6:
                     self._disconnect_from_server()
+                    return
             else:
                 self.thread_print("The option selected is invalid")
 
@@ -209,8 +210,18 @@ class ClientHandler(object):
         TODO: delete all the data related to this client from the server.
         :return: VOID
         """
-        # print("delete_client_data")
-        self.server.clients.pop(self.client_id, None)
+        self.clients_lock.acquire()
+
+        # delete client from server 'clients' & 'names'
+        del self.server.clients[self.client_id]
+        del self.server.names[self.client_id]
+
+        # delete client from rooms if applicable
+        for room in self.server.rooms:
+            if self.client_id in room:
+                room.remove(self.client_id)
+
+        self.clients_lock.release()
 
     def _disconnect_from_server(self):
         """
@@ -219,6 +230,9 @@ class ClientHandler(object):
         """
         # print("_disconnect_from_server")
         self.delete_client_data()
+        self.send({
+            'message': 'Successfully Disconnected'
+        })
         self.clientsocket.close()
 
     def chat(self, room_id):

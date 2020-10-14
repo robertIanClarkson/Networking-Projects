@@ -69,7 +69,11 @@ class Menu(object):
                 self.option5()
                 return
             elif (option == 6):
-                return self.option6()
+                data = self.option6()
+                self.client.send(data)
+                data = self.client.receive()
+                print(data['message'])
+                exit()
             self.client.send(data)
             data = self.client.receive()
             print(data['message'])

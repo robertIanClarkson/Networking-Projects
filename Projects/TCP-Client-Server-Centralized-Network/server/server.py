@@ -58,10 +58,6 @@ class Server(object):
             raise Exception("ERROR: _listen --> {exception}".format(exception=e))
 
     def _accept_clients(self):
-        """
-        Accept new clients
-        :return: VOID
-        """
         while True:
             try:
                 # TODO: Accept a client
@@ -74,14 +70,6 @@ class Server(object):
                 raise Exception("ERROR: _accept_clients --> {exception}".format(exception=e))
 
     def client_handler_thread(self, clientsocket, address):
-        """
-        Sends the client id assigned to this clientsocket and
-        Creates a new ClientHandler object
-        See also ClientHandler Class
-        :param clientsocket:
-        :param address:
-        :return: a client handler object.
-        """
         try:
             # TODO: create a new client handler object and return it
             # create the client handler
