@@ -157,18 +157,18 @@ class Menu(object):
         :param option:
         :return: a python dictionary with all the data needed from user in option 4.
         """
+        # send the server our options
         data = {}
-
-        # Send send the server out options
         data['option'] = 4
         data['room_id'] = int(input("Enter new chat room id: "))
         self.client.send(data)
 
-        # print the response "----------------------- Chat Room 23456 ------------------------"
+        # print the chat header
         roomTitle = self.client.receive()['message']
         print(roomTitle)
 
-        self.chat()
+        # enter chat logic
+        self.chat('exit')
 
     def option5(self):
         """
@@ -176,15 +176,18 @@ class Menu(object):
         :param option:
         :return: a python dictionary with all the data needed from user in option 5.
         """
+        # send the server our options
         data = {}
         data['option'] = 5
         data['room_id'] = int(input("Enter chat room id to join: "))
         self.client.send(data)
 
+        # print the chat header
         roomTitle = self.client.receive()['message']
         print(roomTitle)
 
-        self.chat()
+        # enter chat logic
+        self.chat('bye')
 
     def option6(self):
         """
@@ -197,20 +200,25 @@ class Menu(object):
         # Your code here.
         return data
 
-    def chat(self):
-        Thread(target=self.chatRecv, args=()).start()
-        self.chatSend()
+    def chat(self, end_word):
+        t = Thread(target=self.chatRecv, args=())
+        t.start()
+        self.chatSend(end_word)
+        t.join()
 
     def chatRecv(self):
         while True:
-            recv = self.client.receive()['message']
-            print(recv)
+            data = self.client.receive()
+            if 'exit' in data:
+                print(data['exit'])
+                return
+            print(data['message'])
 
-    def chatSend(self):
+    def chatSend(self, end_word):
         sendData = {}
         while True:
             newMessage = input()
-            if newMessage == 'exit':
-                break
-            sendData['message'] = "{name}> {message}".format(name=self.client.name, message=newMessage)
+            sendData['message'] = newMessage
             self.client.send(sendData)
+            if newMessage == end_word:
+                return

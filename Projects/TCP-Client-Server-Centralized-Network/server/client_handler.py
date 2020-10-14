@@ -73,11 +73,12 @@ class ClientHandler(object):
         """
         while True:
             data = self.receive()
-
-            self.thread_print(
-                "(+) Received Data from: {id} --> option {message}".format(id=self.client_id, message=data['option']))
+            print(data)
             if ('option' in data.keys()) and (1 <= data['option'] <= 6):  # validates a valid option selected
                 option = data['option']
+                self.thread_print(
+                    "(+) Received Data from: {id} --> option {message}".format(id=self.client_id,
+                                                                               message=option))
                 if option == 1:
                     self._send_user_list()
                 elif option == 2:
@@ -175,7 +176,7 @@ class ClientHandler(object):
             'message': message
         })
 
-        self.chat(room_id)
+        self.chat_create(room_id, 'exit')
 
     def _join_chat(self, room_id):
         """
@@ -203,7 +204,7 @@ class ClientHandler(object):
                 client_handler.send(data)
         self.rooms_lock.release()
 
-        self.chat(room_id)
+        self.chat_join(room_id, 'bye')
 
     def delete_client_data(self):
         """
@@ -235,18 +236,72 @@ class ClientHandler(object):
         })
         self.clientsocket.close()
 
-    def chat(self, room_id):
+    def chat_create(self, room_id, end_word):
         data = {}
         while True:
             # get new sent message
             recvMessage = self.receive()
+            # check for end word
+            if recvMessage['message'] == end_word:
+                self.rooms_lock.acquire()
+                for client_id in self.server.rooms[room_id]:
+                    if client_id != self.client_id:
+                        client_handler = self.server.clients[client_id]
+                        client_handler.send({
+                            'exit': "Chatroom has been closed\nType 'bye' to leave"
+                        })
+                    else:
+                        self.send({
+                            'exit': "Closed chatroom, bye."
+                        })
+                del self.server.rooms[room_id]
+                self.rooms_lock.release()
+
+                return
 
             # send message to everyone in room
             self.rooms_lock.acquire()
             for client_id in self.server.rooms[room_id]:
                 if self.client_id != client_id:
                     client_handler = self.server.clients[client_id]
-                    client_handler.send(recvMessage)
+                    message = "{name}> {message}".format(name=self.server.names[self.client_id], message=recvMessage['message'])
+                    client_handler.send({
+                        'message': message
+                    })
+            self.rooms_lock.release()
+
+    def chat_join(self, room_id, end_word):
+        data = {}
+        while True:
+            # get new sent message
+            recvMessage = self.receive()
+            # check if client trying to leave
+            if recvMessage['message'] == end_word:
+                self.rooms_lock.acquire()
+                if room_id in self.server.rooms:
+                    self.server.rooms[room_id].remove(self.client_id)
+                    for client_id in self.server.rooms[room_id]:
+                        if self.client_id != client_id:
+                            client_handler = self.server.clients[client_id]
+                            client_handler.send({
+                                'message': "{name} disconnected from the chat.".format(name=self.server.names[self.client_id])
+                            })
+                self.rooms_lock.release()
+                self.send({
+                    'exit': 'left chat'
+                })
+                return
+
+            # send message to everyone in room
+            self.rooms_lock.acquire()
+            for client_id in self.server.rooms[room_id]:
+                if self.client_id != client_id:
+                    client_handler = self.server.clients[client_id]
+                    message = "{name}> {message}".format(name=self.server.names[self.client_id],
+                                                         message=recvMessage['message'])
+                    client_handler.send({
+                        'message': message
+                    })
             self.rooms_lock.release()
 
     def init(self):
