@@ -18,78 +18,46 @@ class Server(object):
     MAX_NUM_CONN = 10
 
     def __init__(self, ip_address='127.0.0.1', port=13000):
-        """
-        Class constructor
-        :param ip_address:
-        :param port:
-        """
+        # save ip & host
+        self.host = ip_address
+        self.port = port
+
         # create an INET, STREAMing socket
         self.serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         # server state
         self.clients = {}  # key: client_id, value: clientHandler
         self.names = {}  # key: client_id, value: client_name
-        self.rooms = {} # key: room_number, value: [client_id]
-
-        # TODO: bind the socket to a public host, and a well-known port
-        self.host = ip_address
-        self.port = port
+        self.rooms = {}  # key: room_number, value: [client_id]
 
     def _bind(self):
-        try:
-            self.serversocket.bind((self.host, self.port))
-        except Exception as e:
-            self.serversocket.close()
-            raise Exception("ERROR: _bind --> {exception}".format(exception=e))
+        self.serversocket.bind((self.host, self.port))
 
     def _listen(self):
-        """
-        Private method that puts the server in listening mode
-        If successful, prints the string "Listening at <ip>/<port>"
-        i.e "Listening at 127.0.0.1/10000"
-        :return: VOID
-        """
-        # TODO: your code here
-        try:
-            self.serversocket.listen(self.MAX_NUM_CONN)
-            print("Server listening at {host}/{port}".format(host=self.host, port=self.port))
-        except Exception as e:
-            self.serversocket.close()
-            raise Exception("ERROR: _listen --> {exception}".format(exception=e))
+        self.serversocket.listen(self.MAX_NUM_CONN)
+        print("Server listening at {host}/{port}".format(host=self.host, port=self.port))
 
     def _accept_clients(self):
         while True:
-            try:
-                # TODO: Accept a client
-                # TODO: Create a thread of this client using the client_handler_threaded class
-                clienthandler, addr = self.serversocket.accept()
-                Thread(target=self.client_handler_thread, args=(clienthandler, addr)).start()
-            except Exception as e:
-                # TODO: Handle exceptions
-                self.serversocket.close()
-                raise Exception("ERROR: _accept_clients --> {exception}".format(exception=e))
+            # accept the new client
+            clienthandler, addr = self.serversocket.accept()
 
+            # start a new thread
+            Thread(target=self.client_handler_thread, args=(clienthandler, addr), daemon=True).start()
+
+    # main thread entry point
     def client_handler_thread(self, clientsocket, address):
-        try:
-            # TODO: create a new client handler object and return it
-            # create the client handler
-            client_handler = ClientHandler(self, clientsocket, address)
+        # create the client handler
+        client_handler = ClientHandler(self, clientsocket, address)
 
-            # init the CH
-            client_handler.init()
+        # init the CH
+        client_handler.init()
 
-            # run the main logic
-            client_handler.run()
+        # run the main logic
+        client_handler.run()
 
-        except Exception as e:
-            self.serversocket.close()
-            raise Exception("ERROR: client_handler_thread --> ", e)
-
+    # main server logic
     def run(self):
-        """
-        Already implemented for you. Runs this client
-        :return: VOID
-        """
         self._bind()
         self._listen()
         self._accept_clients()

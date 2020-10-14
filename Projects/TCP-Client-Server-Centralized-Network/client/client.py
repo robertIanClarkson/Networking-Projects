@@ -15,20 +15,7 @@ import pickle
 
 
 class Client(object):
-    """
-    The client class provides the following functionality:
-    1. Connects to a TCP server 
-    2. Send serialized data to the server by requests
-    3. Retrieves and deserialize data from a TCP server
-    """
-
     def __init__(self):
-        """
-        Class constractpr
-        """
-        # Creates the client socket
-        # AF_INET refers to the address family ipv4.
-        # The SOCK_STREAM means connection oriented TCP protocol.
         self.clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.host = None
         self.port = None
@@ -39,6 +26,7 @@ class Client(object):
     def get_client_id(self):
         return self.clientid
 
+    # get new client info and server specs
     def getClientInfo(self, host, port):
         self.host = input("Enter the server IP Address: ")
         if self.host == "":
@@ -50,64 +38,38 @@ class Client(object):
         if self.name == "":
             self.name = "anonymous"
 
+    # connect to the server
     def connect(self, host="127.0.0.1", port=13000):
-        """
-        TODO: Connects to a server. Implements exception handler if connection is resetted. 
-	    Then retrieves the cliend id assigned from server, and sets
-        :param host: 
-        :param port: 
-        :return: VOID
-        """
-        try:
-            self.getClientInfo(host, port)
-            self.clientSocket.connect((host, port))
-            print("\nSuccessfully connected to server at {host}/{port}".format(host=host, port=port))
-            self.clientid = self.receive()['clientid']
-            self.send(self.name)
-            print("Your client info is:")
-            print("Client Name: {name}".format(name=self.name))
-            print("Client ID: {id}".format(id=self.clientid))
-        except Exception as e:
-            self.clientSocket.close()
-            raise Exception("ERROR: connect --> {exception}".format(exception=e))
+        self.getClientInfo(host, port)
+        self.clientSocket.connect((host, port))  # connect is done here
+        print("\nSuccessfully connected to server at {host}/{port}".format(host=host, port=port))
 
+        # handshake between client and server
+        # client gets its client_id
+        self.clientid = self.receive()['clientid']
+
+        # send the name of the client to the server
+        self.send(self.name)
+
+        # log some info for the client
+        print("Your client info is:")
+        print("Client Name: {name}".format(name=self.name))
+        print("Client ID: {id}".format(id=self.clientid))
+
+    # send data from client to CH
     def send(self, data):
-        """
-        TODO: Serializes and then sends data to server
-        :param data:
-        :return:
-        """
-        try:
-            serialized_data = pickle.dumps(data)
-            self.clientSocket.send(serialized_data)
-        except Exception as e:
-            self.clientSocket.close()
-            raise Exception("ERROR: send --> {exception}".format(exception=e))
+        serialized_data = pickle.dumps(data)
+        self.clientSocket.send(serialized_data)\
 
+    # receive data from CH
     def receive(self, MAX_BUFFER_SIZE=8192):
-        """
-        TODO: Desearializes the data received by the server
-        :param MAX_BUFFER_SIZE: Max allowed allocated memory for this data
-        :return: the deserialized data.
-        """
-        try:
-            data_from_client = self.clientSocket.recv(MAX_BUFFER_SIZE)
-            data = pickle.loads(data_from_client)
-            return data
-        except Exception as e:
-            self.clientSocket.close()
-            raise Exception("ERROR: receive --> {exception}".format(exception=e))
+        data_from_client = self.clientSocket.recv(MAX_BUFFER_SIZE)
+        data = pickle.loads(data_from_client)
+        return data
 
+    # close the client
     def close(self):
-        """
-        TODO: close the client socket
-        :return: VOID
-        """
-        try:
-            self.clientSocket.close()
-        except Exception as e:
-            self.clientSocket.close()
-            raise Exception("ERROR: close --> {exception}".format(exception=e))
+        self.clientSocket.close()
 
     def run(self):
         receiveData = self.receive()

@@ -13,49 +13,23 @@
 # Usage :           menu = Menu() # creates object
 #
 ########################################################################################
-
 from threading import Thread
 
-
 class Menu(object):
-    """
-    This class handles all the actions related to the user menu.
-    An object of this class is serialized ans sent to the client side
-    then, the client sets to itself as owner of this menu to handle all
-    the available options.
-    Note that user interactions are only done between client and user.
-    The server or client_handler are only in charge of processing the
-    data sent by the client, and send responses back.
-    """
 
     def __init__(self, client):
-        """
-        Class constractor
-        :param client: the client object on client side
-        """
         self.client = client
 
     def set_client(self, client):
         self.client = client
 
     def show_menu(self):
-        """
-        TODO: 3. print the menu in client console.
-        :return: VOID
-        """
         print(self.get_menu())
 
     def process_user_data(self):
-        """
-        TODO: according to the option selected by the user, prepare the data that will be sent to the server.
-        :param option:
-        :return: VOID
-        """
         data = {}
         option = self.option_selected()
         if 1 <= option <= 6:  # validates a valid option
-            # TODO: implement your code here
-            # (i,e  algo: if option == 1, then data = self.menu.option1, then. send request to server with the data)
             if (option == 1):
                 data = self.option1()
             elif (option == 2):
@@ -69,11 +43,21 @@ class Menu(object):
                 self.option5()
                 return
             elif (option == 6):
+                # send disconnect option to CH
                 data = self.option6()
                 self.client.send(data)
+
+                # print message from server
                 data = self.client.receive()
                 print(data['message'])
+
+                # close the client's socket
+                self.client.close()
+
+                # exit the runtime
                 exit()
+
+            # send, receive, then print
             self.client.send(data)
             data = self.client.receive()
             print(data['message'])
@@ -82,28 +66,10 @@ class Menu(object):
             return self.process_user_data()
 
     def option_selected(self):
-        """
-        TODO: takes the option selected by the user in the menu
-        :return: the option selected.
-        """
-        # TODO: your code here.
         option = input('\nYour option <enter a number>: ')
         return int(option)
 
     def get_menu(self):
-        """
-        TODO: Inplement the following menu
-        ****** TCP CHAT ******
-        -----------------------
-        Options Available:
-        1. Get user list
-        2. Sent a message
-        3. Get my messages
-        4. Create a new channel
-        5. Chat in a channel with your friends
-        6. Disconnect from server
-        :return: a string representing the above menu.
-        """
         menu = "\n****** TCP CHAT ******\r\n" \
                "-----------------------\r\n" \
                "Options Available:\r\n" \
@@ -116,47 +82,23 @@ class Menu(object):
         return menu
 
     def option1(self):
-        """
-        TODO: Prepare the user input data for option 1 in the menu
-        :param option:
-        :return: a python dictionary with all the data needed from user in option 1.
-        """
         data = {}
         data['option'] = 1
-        # Your code here.
         return data
 
     def option2(self):
-        """
-        TODO: Prepare the user input data for option 2 in the menu
-        :param option:
-        :return: a python dictionary with all the data needed from user in option 2.
-        """
         data = {}
         data['option'] = 2
-        # Your code here.
         data['message'] = input("Enter your message: ")
         data['id'] = int(input("Enter recipient id: "))
         return data
 
     def option3(self):
-        """
-        TODO: Prepare the user input data for option 3 in the menu
-        :param option:
-        :return: a python dictionary with all the data needed from user in option 3.
-        """
         data = {}
         data['option'] = 3
-        # Your code here.
         return data
 
-    # special function
     def option4(self):
-        """
-        TODO: Prepare the user input data for option 4 in the menu
-        :param option:
-        :return: a python dictionary with all the data needed from user in option 4.
-        """
         # send the server our options
         data = {}
         data['option'] = 4
@@ -164,18 +106,17 @@ class Menu(object):
         self.client.send(data)
 
         # print the chat header
-        roomTitle = self.client.receive()['message']
-        print(roomTitle)
+        data = self.client.receive()
+        if 'exit' not in data:
+            roomTitle = data['message']
+            print(roomTitle)
 
-        # enter chat logic
-        self.chat('exit')
+            # enter chat logic
+            self.chat('exit')
+        else:
+            print(data['exit'])
 
     def option5(self):
-        """
-        TODO: Prepare the user input data for option 5 in the menu
-        :param option:
-        :return: a python dictionary with all the data needed from user in option 5.
-        """
         # send the server our options
         data = {}
         data['option'] = 5
@@ -190,35 +131,41 @@ class Menu(object):
         self.chat('bye')
 
     def option6(self):
-        """
-        TODO: Prepare the user input data for option 6 in the menu
-        :param option:
-        :return: a python dictionary with all the data needed from user in option 6.
-        """
         data = {}
         data['option'] = 6
-        # Your code here.
         return data
 
+    # client side chat logic
     def chat(self, end_word):
+        # create a new thread to handle incoming messages
         t = Thread(target=self.chatRecv, args=())
         t.start()
+
+        # use this thread to handle client's new messages
         self.chatSend(end_word)
+
+        # join the receive thread back into this thread
         t.join()
 
     def chatRecv(self):
         while True:
-            data = self.client.receive()
-            if 'exit' in data:
-                print(data['exit'])
+            # get message from server
+            message = self.client.receive()
+            if 'exit' in message:
+                # break out of this loop
+                print(message['exit'])
                 return
-            print(data['message'])
+            print(message['message'])
 
     def chatSend(self, end_word):
         sendData = {}
         while True:
-            newMessage = input()
-            sendData['message'] = newMessage
+            # get user input
+            message = input()
+
+            # send message to server
+            sendData['message'] = message
             self.client.send(sendData)
-            if newMessage == end_word:
+            if message == end_word:
+                # break out of this loop
                 return
