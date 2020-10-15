@@ -172,7 +172,12 @@ class ClientHandler(object):
             })
 
             # enter the main chat logic for a creator
-            self.chat_create(room_id, 'exit')
+            try:
+                self.chat_create(room_id, 'exit')
+            except EOFError as err:
+                del self.server.rooms[room_id]
+                raise EOFError(err)
+                # self._disconnect_from_server()
 
         else:
             # send error message to client
@@ -206,8 +211,19 @@ class ClientHandler(object):
                 client_handler.send(data)
         self.rooms_lock.release()
 
-        # enter the main chat logic for a joiner
-        self.chat_join(room_id, 'bye')
+        try:
+            # enter the main chat logic for a joiner
+            self.chat_join(room_id, 'bye')
+        except EOFError as err:
+            self.rooms_lock.acquire()
+            for client_id in self.server.rooms[room_id]:
+                if client_id != self.client_id:
+                    client_handler = self.server.clients[client_id]
+                    client_handler.send({
+                        'message': "{name} left abruptly".format(name=self.server.names[self.client_id])
+                    })
+            self.rooms_lock.release()
+            raise EOFError(err)
 
     # delete client data from server's global variables
     def delete_client_data(self):
@@ -218,8 +234,8 @@ class ClientHandler(object):
 
         # delete client from rooms if applicable
         for room in self.server.rooms:
-            if self.client_id in room:
-                room.remove(self.client_id)
+            if self.client_id in self.server.rooms[room]:
+                self.server.rooms[room].remove(self.client_id)
 
         self.clients_lock.release()
 
@@ -367,6 +383,6 @@ class ClientHandler(object):
 
     # main process
     def run(self):
-        
+
         self._sendMenu()
         self.process_options()
