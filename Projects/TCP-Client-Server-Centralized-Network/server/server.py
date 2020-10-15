@@ -53,8 +53,16 @@ class Server(object):
         # init the CH
         client_handler.init()
 
-        # run the main logic
-        client_handler.run()
+        try:
+            # run the main logic
+            client_handler.run()
+        except EOFError as err:
+            client_id = client_handler.client_id
+            print("(x) Client Handler Thread Error --> Client ({name}:{client_id}) left abruptly".format(name=self.names[client_id], client_id=client_id))
+            client_handler.delete_client_data()
+        except Exception as err:
+            print("(x) Client Handler Thread Error --> {err}".format(err=err))
+            client_handler.delete_client_data()
 
     # main server logic
     def run(self):
@@ -63,5 +71,8 @@ class Server(object):
         self._accept_clients()
 
 if __name__ == '__main__':
-    server = Server()
-    server.run()
+    try:
+        server = Server()
+        server.run()
+    except Exception as err:
+        print("(x) Server Error --> {err}".format(err=err))

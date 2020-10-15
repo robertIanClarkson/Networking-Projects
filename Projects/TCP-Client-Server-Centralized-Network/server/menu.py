@@ -69,6 +69,7 @@ class Menu(object):
         option = input('\nYour option <enter a number>: ')
         return int(option)
 
+
     def get_menu(self):
         menu = "\n****** TCP CHAT ******\r\n" \
                "-----------------------\r\n" \

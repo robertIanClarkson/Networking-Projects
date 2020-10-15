@@ -367,5 +367,6 @@ class ClientHandler(object):
 
     # main process
     def run(self):
+        
         self._sendMenu()
         self.process_options()

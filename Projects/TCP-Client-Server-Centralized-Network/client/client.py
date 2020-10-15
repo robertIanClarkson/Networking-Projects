@@ -90,6 +90,13 @@ class Client(object):
 
 
 if __name__ == '__main__':
-    client = Client()
-    client.connect()
-    client.run()
+    try:
+        client = Client()
+        client.connect()
+        client.run()
+    except KeyboardInterrupt as err:
+        print('\n(x) You left abruptly')
+    except Exception as err:
+        print('\n(x) Client Error --> {err}'.format(err=err))
+    finally:
+        exit()
