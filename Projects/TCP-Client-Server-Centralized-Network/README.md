@@ -16,6 +16,14 @@ This project uses the base socket library and enables communication between the 
 
 This project was developed using the python 3.8.3
 
+in server folder
+  * python server.py
+  
+in client folder
+  * python client.py
+  
+ NOTE: This requires you have multiple terminal windows open, 1 for server, 1 for each client
+
 * Attach screenshots or videos to this file to illustrate how your program works for all the options in the menu. 
 
 Video of functions: https://youtu.be/oouuf_Crz60
