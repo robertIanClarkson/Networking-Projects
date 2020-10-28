@@ -1,6 +1,6 @@
 # Lab: 5
-# Author: <your name>
-# SID: <your student id>
+# Author: Robert Clarkson
+# SID: 915433914
 # Description: in this lab students will learn how to extract decoded values from a bencoded torrent file
 # Implement all the methods marked as TODO
 
@@ -134,7 +134,7 @@ class Torrent:
 
 # uncomment the following code for testing
 
-# torrent = Torrent("ages.torrent")
-# metainfo = torrent.metainfo()
-# print(metainfo)
+torrent = Torrent("ages.torrent")
+metainfo = torrent.metainfo()
+print(metainfo)
 
