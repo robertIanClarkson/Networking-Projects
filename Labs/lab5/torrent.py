@@ -6,6 +6,7 @@
 
 import torrent_parser as tp
 import hashlib
+import json
 
 
 class Torrent:
@@ -38,11 +39,8 @@ class Torrent:
           Note: must use the private method '_hash_torrent_info(...)' to hash the torrent_info
     :return: the SHA1 hash of the torrent info
     """
-    torrent_info = ""
-    for piece in self.pieces():
-      torrent_info += piece
-    hashed_info = self._hash_torrent_info(torrent_info)
-    print(hashed_info)
+    torrent_info = json.dumps(self.torrent_data['info']).encode()
+    return self._hash_torrent_info(torrent_info)
 
   def validate_hash_info(self, info_hash):
     """
@@ -134,16 +132,20 @@ class Torrent:
     """
     metainfo = ""
     metainfo += f'(FILE) Announce      : {self.announce()}\n'
+    metainfo += f'(FILE) Comment       : {self.comment()}\n'
+    metainfo += f'(FILE) Created By    : {self.created_by()}\n'
+    metainfo += f'(FILE) Creation Date : {self.creation_date()}\n\n'
     metainfo += f'(FILE) (NODES)\n'
     for node in self.nodes():
       metainfo += f' |-->(NODE) {node}\n'
-    metainfo += f'(FILE) Comment       : {self.comment()}\n'
-    metainfo += f'(FILE) Created By    : {self.created_by()}\n'
-    metainfo += f'(FILE) Creation Date : {self.creation_date()}\n'
+
+    metainfo += f'\n(FILE) (INFO)\n'
     metainfo += f' |-->(INFO) File Length   : {self.file_length()}\n'
     metainfo += f' |-->(INFO) File Name     : {self.file_name()}\n'
     metainfo += f' |-->(INFO) Piece Length  : {self.piece_length()}\n'
-    metainfo += f' |-->(INFO) Num of Pieces : {self.num_pieces()}\n'
+    metainfo += f' |-->(INFO) Num of Pieces : {self.num_pieces()}\n\n'
+    metainfo += f'(SHA) SHA Value  : {self.info_hash()}\n'
+    metainfo += f'(SHA) Validated? : {self.validate_hash_info(self.info_hash())}'
     return metainfo
 
 
@@ -153,4 +155,6 @@ class Torrent:
 torrent = Torrent("age.torrent")
 metainfo = torrent.metainfo()
 print(metainfo)
+
+# print(torrent.info_hash())
 
