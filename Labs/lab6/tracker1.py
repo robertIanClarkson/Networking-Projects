@@ -104,11 +104,11 @@ class Tracker:
         TODO: This function is called from the peer.py to start this tracker
         :return: VOID
         """
-        print("RUNNING VIDEO CODE!");
-        trackerSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM);
-        trackerSock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1);
-        data = "please work!!"
-        trackerSock.sendto(self.encode(data), ('127.0.0.1', 5001))
-        print("DID IT WORK?!")
+        # print("RUNNING VIDEO CODE!");
+        # trackerSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM);
+        # trackerSock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1);
+        # data = "please work!!"
+        # trackerSock.sendto(self.encode(data), ('127.0.0.1', 5001))
+        # print("DID IT WORK?!")
 
 
