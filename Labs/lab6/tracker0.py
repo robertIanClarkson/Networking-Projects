@@ -5,6 +5,7 @@
 # Description: this file contains the implementation of the tracker class.
 
 import bencodepy
+import socket
 
 class Tracker:
     """
@@ -22,7 +23,7 @@ class Tracker:
         self._server = server
         self._torrent = torrent
         self._is_announce = announce
-        self._clienthandler = server.clienthandlers[0]
+        # self._clienthandler = server.clienthandlers[0]
         # will story a list of dictionaries representing entries in the routing table
         # dictionaries stored here are in the following form
         # {'nodeID': '<the node id is a SHA1 hash of the ip_address and port of the server node and a random uuid>',
@@ -103,6 +104,11 @@ class Tracker:
         TODO: This function is called from the peer.py to start this tracker
         :return: VOID
         """
-        pass
+        print("RUNNING VIDEO CODE!");
+        trackerSock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM);
+        trackerSock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1);
+        data = "please work!!"
+        trackerSock.sendto(self.encode(data), ('127.0.0.1', 5001))
+        print("DID IT WORK?!")
 
 

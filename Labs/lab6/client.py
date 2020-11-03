@@ -16,10 +16,10 @@ import pickle
 
 
 class Client(object):
-    def __init__(self):
-        self.clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.host = None
-        self.port = None
+    def __init__(self, host, port):
+        self.clientSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.host = host
+        self.port = port
         self.name = None
         self.clientid = 0
         self.menu = None
@@ -59,35 +59,35 @@ class Client(object):
 
     # send data from client to CH
     def send(self, data):
+        print('***Client: send()')
         serialized_data = pickle.dumps(data)
         self.clientSocket.send(serialized_data) \
  \
     # receive data from CH
     def receive(self, MAX_BUFFER_SIZE=8192):
+        print('***Client: receive()')
         data_from_client = self.clientSocket.recv(MAX_BUFFER_SIZE)
         data = pickle.loads(data_from_client)
         return data
 
     # close the client
     def close(self):
+        print('***Client: close()')
         self.clientSocket.close()
 
     def run(self):
-        receiveData = self.receive()
-
-        # get the file
-        newFile = open(receiveData['file_name'], 'wb')
-        newFile.write(receiveData['file_content'])
-
-        # get the menu object
-        receiveData = self.receive()
-        self.menu = receiveData['menu']
-        self.menu.set_client(self)
-
-        # communicate
-        while True:
-            self.menu.show_menu()
-            self.menu.process_user_data()
+        print('***Client: run()')
+        self.clientSocket.bind((self.host, self.port))
+        # self.clientSo
+        print('bind')
+        # self.clientSocket.listen(2)
+        # print('listen')
+        # clienthandler, addr = self.clientSocket.accept()
+        # print('accept')
+        # receiveData = self.receive()
+        data = self.clientSocket.recvfrom(1024)
+        print(data)
+        print('receive')
 
 
 # if __name__ == '__main__':

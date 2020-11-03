@@ -5,7 +5,7 @@ This file contains a basic template of the Peer class.
 
 from server import *  # assumes that your server file is in this folder
 from client import *  # assumes that your client file is in this folder
-from tracker import *  # assumes that your Tracker file is in this folder
+from tracker2 import *  # assumes that your Tracker file is in this folder
 from torrent import *  # assumes that your Torrent file is in this folder
 from threading import Thread
 import uuid
@@ -16,8 +16,8 @@ class Peer:
     In this part of the peer class we implement methods to connect to multiple peers.
     Once the connection is created downloading data is done in similar way as in TCP assigment.
     """
-    SERVER_PORT = 5000
-    CLIENT_MIN_PORT_RANGE = 5001
+    SERVER_PORT = 7000
+    CLIENT_MIN_PORT_RANGE = 7001
 
 
     MAX_NUM_CONNECTIONS = 10
@@ -34,6 +34,7 @@ class Peer:
         :param server_ip_address: used when need to use the ip assigned by LAN
         """
         self.server = Server(server_ip_address, self.SERVER_PORT)  # inherits methods from the server
+        self.client = Client(server_ip_address, self.CLIENT_MIN_PORT_RANGE)
         self.server_ip_address = server_ip_address
         self.id = uuid.uuid4()  # creates unique id for the peer
         self.role = role
@@ -65,7 +66,9 @@ class Peer:
                 print("Tracker running.....")
         except Exception as error:
             print(error)  # server failed to run
-
+            
+    def run_client(self):
+        Thread(target=self.client.run, daemon=False).start()
 
 # runs when executing python3 peer.py
 # main execution
@@ -74,4 +77,5 @@ if __name__ == '__main__':
     peer = Peer(role="peer")
     print("Peer: " + str(peer.id) + " started....")
     peer.run_server()
+    peer.run_client()
     peer.run_tracker()
