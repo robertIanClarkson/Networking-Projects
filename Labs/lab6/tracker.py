@@ -45,6 +45,14 @@ class Tracker:
         except socket.error as error:
             print(error) 
 
+    def send_udp_message(self, message, ip, port):
+        try:
+            new_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            message= self.encode(message)
+            new_socket.sendto(message, (ip, port))
+        except:
+            print("Error sendinf UDP message")
+
     def broadcast_listener(self):
         try:
             print(f'Listening at DHT port --> {self.DHT_PORT}')
@@ -140,6 +148,6 @@ class Tracker:
         else:
             print('This tracker does not support DHT protocol')
 
-tracker = Tracker(None, None, True)
-tracker.run()
+# tracker = Tracker(None, None, True)
+# tracker.run()
 

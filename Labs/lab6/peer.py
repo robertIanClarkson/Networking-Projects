@@ -37,7 +37,7 @@ class Peer:
         self.server_ip_address = server_ip_address
         self.id = uuid.uuid4()  # creates unique id for the peer
         self.role = role
-        self.torrent = Torrent()
+        self.torrent = Torrent('./age.torrent')
         self.tracker = None
 
     def run_server(self):
@@ -73,5 +73,5 @@ if __name__ == '__main__':
     # testing
     peer = Peer(role='peer')
     print("Peer: " + str(peer.id) + "started....")
-    peer.run_server()
+    # peer.run_server()
     peer.run_tracker()
