@@ -5,12 +5,16 @@
 # Description: this file contains the implementation of the tracker class.
 
 import bencodepy
+import socket
+import threading
 
 class Tracker:
     """
     This class contains methods that provide implementations to support trackerless peers
     supporting the DHT and KRPC protocols
     """
+
+    DHT_PORT = 12001
 
     def __init__(self, server, torrent, announce=True):
         """
@@ -22,13 +26,38 @@ class Tracker:
         self._server = server
         self._torrent = torrent
         self._is_announce = announce
-        self._clienthandler = server.clienthandlers[0]
+        # self._clienthandler = server.clienthandlers[0]
+        self.udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.udp_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+        self.udp_socket.bind(("", self.DHT_PORT))
         # will story a list of dictionaries representing entries in the routing table
         # dictionaries stored here are in the following form
         # {'nodeID': '<the node id is a SHA1 hash of the ip_address and port of the server node and a random uuid>',
         #  'ip_address': '<the ip address of the node>', 'port': '<the port number of the node',
         #  'info_hash': '<the info hash from the torrent file>', last_changed': 'timestamp'}
         self._routing_table = []
+
+    def broadcast(self, message, self_broadcast_enabled=False):
+        try:
+            encoded_message = self.encode(message)
+            self.udp_socket.sendto(encoded_message, ('<broadcast>', self.DHT_PORT))
+            print('Broadcasting...')
+        except socket.error as error:
+            print(error) 
+
+    def broadcast_listener(self):
+        try:
+            print(f'Listening at DHT port --> {self.DHT_PORT}')
+            while True:
+                raw_data, sender_ip_and_port = self.udp_socket.recvfrom(4096)
+                if raw_data:
+                    data = self.decode(raw_data)
+                    ip_sender = sender_ip_and_port[0]
+                    port_sender = sender_ip_and_port[1]
+                    print(f'data recieved by sender --> {data} | {ip_sender} | {port_sender}')
+        except:
+            print("Error listening at DHT port")
+
 
     def encode(self, message):
         """
@@ -98,11 +127,19 @@ class Tracker:
         """
         pass
 
-    def run(self):
+    def run(self, start_with_broadcast=True):
         """
         TODO: This function is called from the peer.py to start this tracker
         :return: VOID
         """
-        pass
+        if self._is_announce:
+            threading.Thread(target=self.broadcast_listener).start()
+            if start_with_broadcast:
+                message = "Anyone Listening"
+                self.broadcast(message, True)
+        else:
+            print('This tracker does not support DHT protocol')
 
+tracker = Tracker(None, None, True)
+tracker.run()
 
