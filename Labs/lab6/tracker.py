@@ -63,8 +63,10 @@ class Tracker:
                     ip_sender = sender_ip_and_port[0]
                     port_sender = sender_ip_and_port[1]
                     print(f'data recieved by sender --> {data} | {ip_sender} | {port_sender}')
-        except:
+                    self.process_query(data, ip_sender, port_sender)
+        except Exception as err:
             print("Error listening at DHT port")
+            print(err)
 
 
     def encode(self, message):
@@ -82,7 +84,8 @@ class Tracker:
         :param bencoded_message: the bencoded message
         :return: the original message
         """
-        return bencodepy.decode(bencoded_message)
+        bc = bencodepy.Bencode(encoding='utf-8')
+        return bc.decode(bencoded_message)
 
 
 
@@ -98,7 +101,32 @@ class Tracker:
         TODO: implement the ping method. 
         :return:
         """
-        pass
+        message = {}
+        if(y == 'q'):
+            message['t'] = t
+            message['y'] = y
+            message['q'] = 'ping'
+            message['a'] = a
+            # message['r'] = r
+            self.broadcast(message)
+        elif(y == 'r'):
+            message = {}
+            message['t'] = t
+            message['y'] = y
+            message['r'] = r
+            node = self.getNode(r['id'])
+            print(node)
+            self.send_udp_message(message, node['ip'], node['port'])
+            # self.
+            # message['nodes'] = self.get_peers()
+            # node = self.find_entry_in_routing_table_from_node_id(a['id'])
+            # self.send(query, node['ip_address'], node['port']);
+
+    def getNode(self, id):
+        for node in self._routing_table:
+            if node['id'] == id:
+                return node
+        return None
 
     def find_node(self, t, y, a=None, r=None):
         """
@@ -121,12 +149,28 @@ class Tracker:
         """
         pass
 
-    def process_query(self):
+    def process_query(self, query, ip_sender, port_sender):
         """
         TODO: process an incoming query from a node
         :return: the response
         """
-        pass
+        # print(query)
+        if(query['y'] == 'q'):
+            print('PING')
+            node = {}
+            node['id'] = query['a']['id']
+            node['ip'] = ip_sender
+            node['port'] = port_sender
+            self._routing_table.append(node)
+            self.ping(t='aa', y='r', r={"id":"mnopqrstuvwxyz123456"})
+        if(query['y'] == 'r'):
+            print('RESPONSE')
+            node = {}
+            node['id'] = query['r']['id']
+            node['ip'] = ip_sender
+            node['port'] = port_sender
+            self._routing_table.append(node)
+            print(self._routing_table)
 
     def send_response(self):
         """
@@ -140,11 +184,19 @@ class Tracker:
         TODO: This function is called from the peer.py to start this tracker
         :return: VOID
         """
+        # FOR TESTING
+        node = {}
+        node['id'] = 'mnopqrstuvwxyz123456'
+        node['ip'] = '10.0.0.222'
+        node['port'] = 12001
+        self._routing_table.append(node)
+        # ------------
         if self._is_announce:
             threading.Thread(target=self.broadcast_listener).start()
             if start_with_broadcast:
-                message = "Anyone Listening"
-                self.broadcast(message, True)
+                # message = "Anyone Listening"
+                # self.broadcast(message, True)
+                self.ping('aa', 'q', {"id":"abcdefghij0123456789"})
         else:
             print('This tracker does not support DHT protocol')
 
