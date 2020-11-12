@@ -133,7 +133,10 @@ class Tracker:
         TODO: implement the find_node method
         :return:
         """
-        pass
+        message = {"t":t, "y":y, "q":"find_node", "a": a}
+        self.broadcast(message)
+
+        
 
     def get_peers(self, t, y, a=None, r=None):
         """
@@ -163,6 +166,7 @@ class Tracker:
             node['port'] = port_sender
             self._routing_table.append(node)
             self.ping(t='aa', y='r', r={"id":"mnopqrstuvwxyz123456"})
+            return
         if(query['y'] == 'r'):
             print('RESPONSE')
             node = {}
@@ -171,6 +175,8 @@ class Tracker:
             node['port'] = port_sender
             self._routing_table.append(node)
             print(self._routing_table)
+            return
+        
 
     def send_response(self):
         """
