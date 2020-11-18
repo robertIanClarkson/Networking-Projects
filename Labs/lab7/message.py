@@ -1,5 +1,5 @@
 # file:           message.py
-# Author:         <your name here>
+# Author:         Robert Clarkson
 # Date:           04/24/2020
 # Description:    This file contains the Message and Lab7UnitTests classes.
 # Purpose:        Lab 7 CSC645 Computer Networks SFSU
@@ -153,87 +153,92 @@ class Message:
 
     def init_bitfield(self, num_pieces):
         """
-        TODO: Initializes the bitfield with all the pieces set to missing: b'00000000'
         NOTE: Initialization of the bitarry must be in bytes. You can use the 
         library bitarray to create pieces like this: bitarray(8)
         :param num_pieces: the number of pieces defined in the .torrent file
         :return: Void
-        """
-        size_bitfield = math.ceil(num_pieces / 8)
+        """        
+        size_bitfield = math.ceil(num_pieces / 8)        
         spare_bits = (8 * size_bitfield) - num_pieces
         for i in range(size_bitfield - 1):
-            # create a bitarray (piece) of 8 bits size
-            # set all the bits to 0 (missing piece)
-            # add the new piece to the bitfield (self._bitfield['bitfield])
-            pass
-        # create a new bitarray (piece) of spare bits size
-        # # set all the bits to 0 (missing piece)
-        # add the new piece to the bitfield (self._bitfield['bitfield])
+            piece = bitarray(8)
+            piece.setall(False)
+            self._bitfield['bitfield'].append(piece)
+            
+        spare_piece = bitarray(spare_bits)
+        spare_piece.setall(False)
+        self._bitfield['bitfield'].append(spare_piece)
 
     def get_bitfield(self):
         """
-        TODO: get the bitfield payload
         :return: the bitfield payload 
         """
-        pass # your code here
+        return self._bitfield['bitfield']
 
     def get_bitfield_piece(self, piece_index):
         """
-        TODO: gets a piece from the bitfield
         :param piece_index:
         :return: the piece bitfield located at index 'piece_index'
         """
-        pass # your code here
+        return self._bitfield['bitfield'][piece_index]
 
     def get_bitfield_block(self, piece_index, block_index):
         """
-        TODO: gets a block from the bitfield
         :param piece_index:
         :param block_index:
         :return: the block bit located at index 'block_index'
         """
-        pass # your code here
+        return self._bitfield['bitfield'][piece_index][block_index]
 
     def is_block_missing(self, piece_index, block_index):
         """
-        TODO: determines if a block is missing (missing blocks are set to bit 0)
         :param piece_index:
         :param block_index:
         :return: True if the block is missing. Otherwise, returns False
         """
-        pass # your code here
+        return (self._bitfield['bitfield'][piece_index][block_index] == False)
 
     def is_piece_missing(self, piece_index):
         """
-        TODO: determines if a piece is missing (missing pieces has at least one block set to bit 0)
         :param piece_index:
         :return: True if the piece is missing. Otherwise, returns False
         """
-        pass # your code here
+        return not all(self.get_bitfield_piece(piece_index))
 
     def next_missing_block_index(self, piece_index):
         """
-        TODO: finds the next missing block
         :param piece_index:
         :return: the next missing block index
         """
-        pass # your code here
+        missing_block_index = None
+        for i in range(8):
+            if self.is_block_missing(piece_index, i):
+                missing_block_index = i
+                break
+        return missing_block_index
 
     def next_missing_piece_index(self):
         """
-        TODO: finds the next missing piece
         :return: the next missing piece index
         """
-        pass # your code here
+        missing_piece = bitarray(8)
+        missing_piece.setall(False)
+        missing_piece_index = None
+        for i in range(len(self.get_bitfield())):
+            piece = self.get_bitfield_piece(i)
+            if piece == missing_piece:
+                missing_piece_index = i
+                break
+        return missing_piece_index
+
 
     def set_block_to_completed(self, piece_index, block_index):
         """
-        TODO: set the block represented by the piece_index and block_index to b'1' or True
         :param piece_index:
         :param block_index:
         :return: VOID
         """
-        pass # your code here
+        self._bitfield['bitfield'][piece_index][block_index] = True
 
 # This is a unit test class to test your code, please do not modify it. 
 class Lab7UnitTests(unittest.TestCase):
