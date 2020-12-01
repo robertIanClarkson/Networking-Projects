@@ -39,6 +39,7 @@ class Tracker:
 
     def broadcast(self, message, self_broadcast_enabled=False):
         try:
+            print(f'Broadcast: {message}')
             encoded_message = self.encode(message)
             self.udp_socket.sendto(encoded_message, ('<broadcast>', self.DHT_PORT))
             print('Broadcasting...')
@@ -55,7 +56,7 @@ class Tracker:
 
     def broadcast_listener(self):
         try:
-            print(f'Listening at DHT port --> {self.DHT_PORT}')
+            print(f'Listening at DHT port --> {self.DHT_PORT}\n')
             while True:
                 raw_data, sender_ip_and_port = self.udp_socket.recvfrom(4096)
                 if raw_data:
@@ -102,21 +103,21 @@ class Tracker:
         :return:
         """
         message = {}
-        if(y == 'q'):
-            message['t'] = t
-            message['y'] = y
-            message['q'] = 'ping'
-            message['a'] = a
-            # message['r'] = r
-            self.broadcast(message)
-        elif(y == 'r'):
-            message = {}
-            message['t'] = t
-            message['y'] = y
-            message['r'] = r
-            node = self.getNode(r['id'])
-            print(node)
-            self.send_udp_message(message, node['ip'], node['port'])
+        # if(y == 'q'):
+        message['t'] = t
+        message['y'] = y
+        message['q'] = 'ping'
+        message['a'] = a
+        # message['r'] = r
+        self.broadcast(message)
+        # elif(y == 'r'):
+        #     message = {}
+        #     message['t'] = t
+        #     message['y'] = y
+        #     message['r'] = r
+        #     node = self.getNode(r['id'])
+        #     print(node)
+        #     self.send_udp_message(message, node['ip'], node['port'])
             # self.
             # message['nodes'] = self.get_peers()
             # node = self.find_entry_in_routing_table_from_node_id(a['id'])
@@ -157,18 +158,25 @@ class Tracker:
         TODO: process an incoming query from a node
         :return: the response
         """
-        # print(query)
+        print(f'Process: {query}')
+        
+        # QUERY
         if(query['y'] == 'q'):
-            print('PING')
-            node = {}
-            node['id'] = query['a']['id']
-            node['ip'] = ip_sender
-            node['port'] = port_sender
-            self._routing_table.append(node)
-            self.ping(t='aa', y='r', r={"id":"mnopqrstuvwxyz123456"})
-            return
+            # PING
+            if(query['q'] == 'ping'):
+                print('\nPING')
+                node = {}
+                node['id'] = query['a']['id']
+                node['ip'] = ip_sender
+                node['port'] = port_sender
+                self._routing_table.append(node)
+                # self.ping(t='aa', y='r', r={"id":"mnopqrstuvwxyz123456"})
+                self.ping(query['t'], query['y'], query['a'])
+                return
+        
+        # RESPONSE
         if(query['y'] == 'r'):
-            print('RESPONSE')
+            print('\nRESPONSE')
             node = {}
             node['id'] = query['r']['id']
             node['ip'] = ip_sender
@@ -176,7 +184,7 @@ class Tracker:
             self._routing_table.append(node)
             print(self._routing_table)
             return
-        
+                    
 
     def send_response(self):
         """
@@ -195,14 +203,20 @@ class Tracker:
         node['id'] = 'mnopqrstuvwxyz123456'
         node['ip'] = '10.0.0.222'
         node['port'] = 12001
-        self._routing_table.append(node)
+        # self._routing_table.append(node)
         # ------------
         if self._is_announce:
             threading.Thread(target=self.broadcast_listener).start()
             if start_with_broadcast:
                 # message = "Anyone Listening"
                 # self.broadcast(message, True)
-                self.ping('aa', 'q', {"id":"abcdefghij0123456789"})
+                query = {}
+                query['t'] = 'aa'
+                query['y'] = 'q'
+                query['q'] = 'ping'
+                query['a'] = {"id":"abcdefghij0123456789"}
+                self.process_query(query, node['ip'], node['port'])
+                # self.ping(message['t'], message['y'], message['a'])
         else:
             print('This tracker does not support DHT protocol')
 
