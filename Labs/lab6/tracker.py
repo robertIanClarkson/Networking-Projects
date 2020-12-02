@@ -204,7 +204,7 @@ class Tracker:
         :return: the response
         """
         
-        # QUERY
+        # ------QUERY------
         if(query['y'] == 'q'):
             print(f'QUERY ~~> ({ip_sender}:{port_sender})')
             self.printQuery(query)
@@ -283,10 +283,34 @@ class Tracker:
             
             # ANNOUNCE_PEERS QUERY
             elif(query['q'] == 'announce_peers'):
-                print(f'(+) ANNOUNCE PEERS')
-
+                print(f'(!) ANNOUNCE PEERS')
+                # NEED TO DO TOKEN CHECK
+                implied_port = query['a']['implied_port']
+                if implied_port == 1: # use 'port_sender'
+                    print('(!) use port of sender')
+                    # MOCK DATA
+                    message = {
+                        "t": "aa", 
+                        "y": "r", 
+                        "r": {
+                            "id": "mnopqrstuvwxyz123456"
+                        }
+                    }
+                    self.send_udp_message(message, ip_sender, port_sender)
+                else: # use port given in query
+                    print('(!) use port of query')
+                    # MOCK DATA
+                    port_query = query['a']['port']
+                    message = {
+                        "t": "aa", 
+                        "y": "r", 
+                        "r": {
+                            "id": "mnopqrstuvwxyz123456"
+                        }
+                    }
+                    self.send_udp_message(message, ip_sender, port_query)              
         
-        # RESPONSE
+        # ------RESPONSE------
         elif(query['y'] == 'r'):
             print(f'RESPONSE ~~> ({ip_sender}:{port_sender})')
             self.printQuery(query)
