@@ -62,7 +62,7 @@ class Peer:
             if self.server:
                 self.tracker = Tracker(self.server, self.torrent, announce)
                 Thread(target=self.tracker.run, daemon=False).start()
-                print("Tracker running.....")
+                print("(!) Tracker running.....")
         except Exception as error:
             print(error)  # server failed to run
 
@@ -72,6 +72,6 @@ class Peer:
 if __name__ == '__main__':
     # testing
     peer = Peer(role='peer')
-    print("Peer: " + str(peer.id) + "started....")
+    print("(*) Peer: " + str(peer.id) + "started....")
     # peer.run_server()
     peer.run_tracker()

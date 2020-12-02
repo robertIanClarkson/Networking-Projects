@@ -44,33 +44,34 @@ class Tracker:
             # print(f'Broadcast: {message}')
             encoded_message = self.encode(message)
             self.udp_socket.sendto(encoded_message, ('<broadcast>', self.DHT_PORT))
-            print('Broadcasting...')
+            print('(!) Broadcasting...')
         except socket.error as error:
-            print(error) 
+            print(f'(x) Error broadcasting on port ({self.DHT_PORT}) --> {err}')
 
     def send_udp_message(self, message, ip, port):
         try:
+            print(f'(!) sent UDP message --> {ip}:{port}')
+            self.printQuery(message)
             new_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            message= self.encode(message)
+            message = self.encode(message)
             new_socket.sendto(message, (ip, port))
-        except:
-            print("Error sendinf UDP message")
+        except Exception as err:
+            print(f'(x) Error sending UDP message --> {err}')
 
     def broadcast_listener(self):
         try:
-            print(f'Listening at DHT port --> {self.DHT_PORT}\n')
+            print(f'(!) Listening at DHT port --> {self.DHT_PORT}\n')
             while True:
                 raw_data, sender_ip_and_port = self.udp_socket.recvfrom(4096)
                 if raw_data:
                     data = self.decode(raw_data)
                     ip_sender = sender_ip_and_port[0]
                     port_sender = sender_ip_and_port[1]
-                    print(f'data recieved by sender --> {data} | {ip_sender} | {port_sender}')
+                    print(f'(!) data recieved')
+                    # print(f'data recieved by sender --> {data} | {ip_sender} | {port_sender}')
                     self.process_query(data, ip_sender, port_sender)
         except Exception as err:
-            print("Error listening at DHT port")
-            print(err)
-
+            print(f"(x) Error listening at port ({self.DHT_PORT}) --> {err}")
 
     def encode(self, message):
         """
@@ -105,6 +106,7 @@ class Tracker:
         :return:
         """
         # Send Ping
+        print('---PING---')
         message = {
             't': t,
             'y': y,
@@ -125,6 +127,7 @@ class Tracker:
         TODO: implement the find_node method
         :return:
         """
+        print('---FIND_NODE---')
         message = {"t":t, "y":y, "q":"find_node", "a": a}
         try:
             for node in self._routing_table:
@@ -156,29 +159,34 @@ class Tracker:
         # {'nodeID': '<the node id is a SHA1 hash of the ip_address and port of the server node and a random uuid>',
         #  'ip_address': '<the ip address of the node>', 'port': '<the port number of the node',
         #  'info_hash': '<the info hash from the torrent file>', last_changed': 'timestamp'}
-        node = {
+        new_node = {
             'nodeID': nodeID,
             'ip_address': ip_address,
             'port': port,
             'info_hash': info_hash,
             'last_changed': last_changed
         }
-        self._routing_table.append(node)
-        print(f'Added Node: {node}')
+        for node in self._routing_table:
+            if node['nodeID'] == new_node['nodeID']:
+                print(f'(x) Node already in list')
+                self.printQuery(new_node)
+                return
+        self._routing_table.append(new_node)
+        print(f'(+) Added Node')
+        self.printQuery(new_node)
 
     def process_query(self, query, ip_sender, port_sender):
         """
         TODO: process an incoming query from a node
         :return: the response
         """
-        print(f'Process: {query} | {ip_sender} | {port_sender}')
         
         # QUERY
         if(query['y'] == 'q'):
+            print(f'QUERY ~~> ({ip_sender}:{port_sender})')
+            self.printQuery(query)
             # PING QUERY
             if(query['q'] == 'ping'):
-                print('PING')
-
                 # Add node to routing table
                 try:
                     info_hash = self._torrent.info_hash()
@@ -202,22 +210,26 @@ class Tracker:
                     print(f'Failed to send ping response --> {err}')
 
             # FIND_NODE QUERY     
-            elif(query['q'] == 'find_node'):
-                print('FIND_NODE')
-                
+            # elif(query['q'] == 'find_node'):
+                # need to add nodes to dht table
+
 
         
         # RESPONSE
         elif(query['y'] == 'r'):
-            print('RESPONSE')
+            print(f'RESPONSE ~~> ({ip_sender}:{port_sender})')
+            self.printQuery(query)
 
 
-    def send_response(self):
-        """
-        TODO: send a response to a specific node
-        :return:
-        """
-        pass
+    # def send_response(self):
+    #     """
+    #     TODO: send a response to a specific node
+    #     :return:
+    #     """
+
+    def printQuery(self, query):
+        for part in query:
+            print(f'\t--> {part} : {query[part]}')
 
     def run(self, start_with_broadcast=True):
         """
@@ -247,7 +259,8 @@ class Tracker:
                 del query
 
                 time.sleep(1)
-                
+                print('\n\n')
+
                 # FIND_NODE
                 query = {
                     't': 'aa',
@@ -262,6 +275,7 @@ class Tracker:
                 del query
 
                 time.sleep(1)
+                print('\n\n')
 
                 print('DONE')
         else:
