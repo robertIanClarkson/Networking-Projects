@@ -282,7 +282,8 @@ class Tracker:
                         print(f'(x) No nodes connected to this peer have the info_hash --> {target_info_hash}')
             
             # ANNOUNCE_PEERS QUERY
-            # elif(query['q'] == 'announce_peers'):
+            elif(query['q'] == 'announce_peers'):
+                print(f'(+) ANNOUNCE PEERS')
 
         
         # RESPONSE
