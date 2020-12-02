@@ -128,7 +128,12 @@ class Tracker:
         :return:
         """
         print('---FIND_NODE---')
-        message = {"t":t, "y":y, "q":"find_node", "a": a}
+        message = {
+            "t":t, 
+            "y":y, 
+            "q":"find_node", 
+            "a": a
+        }
         try:
             for node in self._routing_table:
                 ip = node['ip_address']
@@ -142,14 +147,34 @@ class Tracker:
         TODO: implement the get_peers method
         :return:
         """
-        pass
+        print('---GET_PEERS---')
+        message = {
+            't': t,
+            'y': y,
+            'q': 'get_peers',
+            'a': a
+        }
+        for node in self._routing_table:
+            ip = node['ip_address']
+            port = node['port']
+            self.send_udp_message(message, ip, port) 
 
     def announce_peers(self, t, y, a=None, r=None):
         """
         TODO: implement the announce_peers method
         :return:
         """
-        pass
+        print('---ANNOUNCE_PEERS---')
+        message = {
+            't': t,
+            'y': y,
+            'q': 'announce_peers',
+            'a': a
+        }
+        for node in self._routing_table:
+            ip = node['ip_address']
+            port = node['port']
+            self.send_udp_message(message, ip, port)
 
     def addNode(self, nodeID, ip_address, port, info_hash, last_changed):
         # will story a list of dictionaries representing entries in the routing table
@@ -183,54 +208,82 @@ class Tracker:
         if(query['y'] == 'q'):
             print(f'QUERY ~~> ({ip_sender}:{port_sender})')
             self.printQuery(query)
+            
             # PING QUERY
             if(query['q'] == 'ping'):
-                # Add node to routing table
-                try:
-                    info_hash = self._torrent.info_hash()
-                    timestamp = time.time()
-                    self.addNode(query['a']['id'], ip_sender, port_sender, info_hash, timestamp)
-                except Exception as err:
-                    print(f'Failed to add node to routing table --> {err}')
+                # Add node to routing table if not there
+                info_hash = self._torrent.info_hash()
+                timestamp = time.time()
+                self.addNode(query['a']['id'], ip_sender, port_sender, info_hash, timestamp)
 
                 # Send response to ping
-                try:
-                    message = {
-                        't': 'aa',
-                        'y': 'r',
-                        'r': {
-                            "id":"0123456789abcdefghij", 
-                            "nodes": "def456..."
-                        }
+                # MOCK DATA 
+                message = {
+                    't': 'aa',
+                    'y': 'r',
+                    'r': {
+                        "id":"0123456789abcdefghij", 
+                        "nodes": "def456..."
                     }
-                    self.send_udp_message(message, ip_sender, port_sender)
-                except Exception as err:
-                    print(f'Failed to send ping response --> {err}')
+                }
+                self.send_udp_message(message, ip_sender, port_sender)
 
             # FIND_NODE QUERY     
             elif(query['q'] == 'find_node'):
                 target = query['a']['target']
                 for node in self._routing_table:
-                    if node['nodeID'] == target: # peer has node
-                        try:
-                            message = {
-                                't': 'aa',
-                                'y': 'r',
-                                'r': {
-                                    "id": "0123456789abcdefghij", 
-                                    "nodes": "def456..."
-                                }
+                    if node['nodeID'] == target: # this peer has target node
+                        # MOCK DATA
+                        message = {
+                            't': 'aa',
+                            'y': 'r',
+                            'r': {
+                                "id": "0123456789abcdefghij", 
+                                "nodes": "def456..."
                             }
-                            self.send_udp_message(message, ip_sender, port_sender)
-                            return
-                        except Exception as err:
-                            print(f'(x) Failed to send find_node response --> {err}')
-                            return
+                        }
+                        self.send_udp_message(message, ip_sender, port_sender)
+                        return
                 print(f'(x) Target node not found')
+            
             # GET PEERS QUERY
             elif(query['q'] == 'get_peers'):
-                print('get_peers')
-                # do something
+                target_info_hash = query['a']['info_hash']
+                if target_info_hash == self._torrent.info_hash(): # this peer sharing same file as sender
+                    # MOCK DATA
+                    message = {
+                        "t": "aa", 
+                        "y": "r", 
+                        "r": {
+                            "id": "abcdefghij0123456789", 
+                            "token": "aoeusnth", 
+                            "values": ["axje.u", "idhtnm"]
+                        }
+                    }
+                    self.send_udp_message(message, ip_sender, port_sender)
+                else: # check if nodes connected to this peer have the file
+                    closest_nodes = []
+                    for node in self._routing_table:
+                        if target_info_hash == node['info_hash']: # node has same file
+                            closest_nodes.append(node['nodeID'])
+                    if closest_nodes: # one or more nodes connected to this peer have the file
+                        # MOCK DATA
+                        message = {
+                            "t":"aa", 
+                            "y":"r", 
+                            "r": {
+                                "id":"abcdefghij0123456789", 
+                                "token":"aoeusnth", 
+                                "nodes": "def456..." 
+                            }
+                        }
+                        self.send_udp_message(message, ip_sender, port_sender)
+                    else: # no nodes connected to this peer have the file
+                        print(f'(x) No nodes connected to this peer have the info_hash --> {target_info_hash}')
+            
+            # ANNOUNCE_PEERS QUERY
+            # elif(query['q'] == 'announce_peers'):
+
         
         # RESPONSE
         elif(query['y'] == 'r'):
@@ -263,7 +316,9 @@ class Tracker:
         if self._is_announce:
             threading.Thread(target=self.broadcast_listener).start()
             if start_with_broadcast:
+                
                 # PING
+                # MOCK DATA
                 query = {
                     't': 'aa',
                     'y': 'q',
@@ -279,6 +334,7 @@ class Tracker:
                 print('\n\n')
 
                 # FIND_NODE
+                # MOCK DATA
                 query = {
                     't': 'aa',
                     'y': 'q',
@@ -289,6 +345,43 @@ class Tracker:
                     }
                 }
                 self.find_node(t=query['t'], y=query['y'], a=query['a'])
+                del query
+
+                time.sleep(1)
+                print('\n\n')
+
+                # GET_PEERS
+                # MOCK DATA
+                query = {
+                    't': 'aa',
+                    'y': 'q',
+                    'q': 'get_peers',
+                    'a': {
+                        'id': 'abcdefghij0123456789',
+                        'info_hash': 'mnopqrstuvwxyz123456'
+                    }
+                }
+                self.get_peers(t=query['t'], y=query['y'], a=query['a'])
+                del query
+
+                time.sleep(1)
+                print('\n\n')
+
+                # ANNOUNCE_PEERS
+                # MOCK DATA
+                query = {
+                    "t":"aa", 
+                    "y":"q", 
+                    "q":"announce_peer", 
+                    "a": {
+                        "id":"abcdefghij0123456789", 
+                        "implied_port": 1, 
+                        "info_hash":"mnopqrstuvwxyz123456", 
+                        "port": 6881, 
+                        "token": "aoeusnth"
+                    }
+                }
+                self.announce_peers(t=query['t'], y=query['y'], a=query['a'])
                 del query
 
                 time.sleep(1)
