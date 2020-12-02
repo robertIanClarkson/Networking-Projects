@@ -133,8 +133,6 @@ class Tracker:
             for node in self._routing_table:
                 ip = node['ip_address']
                 port = node['port']
-                print(f'find_node --> {message} | {ip} | {port}')
-
                 self.send_udp_message(message, ip, port) 
         except Exception as err:
             print(f'Failed to send find_node query --> {err}')
@@ -210,10 +208,29 @@ class Tracker:
                     print(f'Failed to send ping response --> {err}')
 
             # FIND_NODE QUERY     
-            # elif(query['q'] == 'find_node'):
-                # need to add nodes to dht table
-
-
+            elif(query['q'] == 'find_node'):
+                target = query['a']['target']
+                for node in self._routing_table:
+                    if node['nodeID'] == target: # peer has node
+                        try:
+                            message = {
+                                't': 'aa',
+                                'y': 'r',
+                                'r': {
+                                    "id": "0123456789abcdefghij", 
+                                    "nodes": "def456..."
+                                }
+                            }
+                            self.send_udp_message(message, ip_sender, port_sender)
+                            return
+                        except Exception as err:
+                            print(f'(x) Failed to send find_node response --> {err}')
+                            return
+                print(f'(x) Target node not found')
+            # GET PEERS QUERY
+            elif(query['q'] == 'get_peers'):
+                print('get_peers')
+                # do something
         
         # RESPONSE
         elif(query['y'] == 'r'):
