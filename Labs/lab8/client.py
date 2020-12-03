@@ -15,10 +15,10 @@ import pickle
 
 
 class Client(object):
-    def __init__(self):
+    def __init__(self, host, port):
         self.clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.host = None
-        self.port = None
+        self.host = host
+        self.port = port
         self.name = None
         self.clientid = 0
         self.menu = None
@@ -27,34 +27,35 @@ class Client(object):
         return self.clientid
 
     # get new client info and server specs
-    def getClientInfo(self, host, port):
-        self.host = input("Enter the server IP Address: ")
-        if self.host == "":
-            self.host = host
-        self.port = input("Enter the server port: ")
-        if self.port == "":
-            self.port = port
-        self.name = input("Your id key (i.e your name): ")
-        if self.name == "":
-            self.name = "anonymous"
+    # def getClientInfo(self, host, port):
+    #     self.host = input("Enter the server IP Address: ")
+    #     if self.host == "":
+    #         self.host = host
+    #     self.port = input("Enter the server port: ")
+    #     if self.port == "":
+    #         self.port = port
+    #     self.name = input("Your id key (i.e your name): ")
+    #     if self.name == "":
+    #         self.name = "anonymous"
 
     # connect to the server
-    def connect(self, host="127.0.0.1", port=13000):
-        self.getClientInfo(host, port)
-        self.clientSocket.connect((host, port))  # connect is done here
-        print("\nSuccessfully connected to server at {host}/{port}".format(host=host, port=port))
+    def connect(self):
+        # self.getClientInfo(host, port)
+        print('(!) Connecting...')
+        self.clientSocket.connect((self.host, self.port))  # connect is done here
+        print(f'(!) Successfully connected to server at {self.host}/{self.port}')
 
-        # handshake between client and server
-        # client gets its client_id
-        self.clientid = self.receive()['clientid']
+        # # handshake between client and server
+        # # client gets its client_id
+        # self.clientid = self.receive()['clientid']
 
-        # send the name of the client to the server
-        self.send(self.name)
+        # # send the name of the client to the server
+        # self.send(self.name)
 
-        # log some info for the client
-        print("Your client info is:")
-        print("Client Name: {name}".format(name=self.name))
-        print("Client ID: {id}".format(id=self.clientid))
+        # # log some info for the client
+        # print("Your client info is:")
+        # print("Client Name: {name}".format(name=self.name))
+        # print("Client ID: {id}".format(id=self.clientid))
 
     # send data from client to CH
     def send(self, data):

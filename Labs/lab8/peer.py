@@ -15,9 +15,21 @@ import uuid
 from threading import Thread
 
 class Peer:
+
+    # # Peer 1
     SERVER_PORT = 5000
     CLIENT_MIN_PORT_RANGE = 5001
     CLIENT_MAX_PORT_RANGE = 5010
+
+    # # Peer 2
+    # SERVER_PORT = 6000
+    # CLIENT_MIN_PORT_RANGE = 6001
+    # CLIENT_MAX_PORT_RANGE = 6010
+
+    # # Peer3
+    # SERVER_PORT = 7000
+    # CLIENT_MIN_PORT_RANGE = 7001
+    # CLIENT_MAX_PORT_RANGE = 7010
 
     MAX_NUM_CONNECTIONS = 10
     MAX_UPLOAD_RATE = 100
@@ -47,7 +59,7 @@ class Peer:
         try:
             # must thread the server, otherwise it will block the main thread
             Thread(target=self.server.run, daemon=False).start()
-            print("Server started.........")
+            print("(!) Server started.........")
         except Exception as error:
             print(error)  # server failed to run
 
@@ -79,9 +91,12 @@ class Peer:
         :return: VOID
         """
         try:
-            pass  # your code here
-        except:
-            pass  # handle exceptions here
+            print((client_port_to_bind, peer_ip_address))
+            client = Client(peer_ip_address, client_port_to_bind)
+            client.connect()
+            # client.run()
+        except Exception as err:
+            print(f'(x) Error connecting client to peer --> {err}')
 
     def connect(self, peers_ip_addresses):
         """
@@ -93,13 +108,16 @@ class Peer:
         :param peers: list of peer´s ip addresses in the network
         :return: VOID
         """
-        pass  # your code here
-
+        for peer in peers_ip_addresses:
+            ip, port = peer.split('/')
+            port = int(port)
+            Thread(target=self._connect_to_peer, args=(port, ip,), daemon=False).start()
 
 # testing
 peer = Peer(role='peer')
-print("Peer: " + str(peer.id) + " running its server: ")
 peer.run_server()
+print("(!) Peer: " + str(peer.id) + " running its server: ")
+
 #print("Peer: " + str(peer.id) + " running its clients: ")
 # Two ways of testing this:
 #  Locally (same machine):
@@ -108,9 +126,12 @@ peer.run_server()
 #  Using different machines
 #      1. Run two peers in different machines.
 #      2. Run a peer in this machine.
+
+################################PEER 3##########################################
 if peer.role == peer.LEECHER or peer.role == peer.PEER:
-    peer_ips = ['127.0.0.1/4998', '127.0.0.1/4999']  # this list will be sent by the tracker in your P2P assignment
+    peer_ips = ['127.0.0.1/5000', '127.0.0.1/6000']  # this list will be sent by the tracker in your P2P assignment
     peer.connect(peer_ips)
+########################################################################
 
 """ Sample output running this in the same machine """
 # Peer: 6d223864-9cd7-4327-ad02-7856d636af66 running its server:
