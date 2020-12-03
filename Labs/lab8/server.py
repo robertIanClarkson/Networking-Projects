@@ -64,15 +64,15 @@ class Server(object):
             print("(x) Client Handler Thread Error --> {err}".format(err=err))
             client_handler.delete_client_data()
 
-    # main server logic
-    def run(self):
-        self._bind()
-        self._listen()
-        self._accept_clients()
+#     # main server logic
+#     def run(self):
+#         self._bind()
+#         self._listen()
+#         self._accept_clients()
 
-if __name__ == '__main__':
-    try:
-        server = Server()
-        server.run()
-    except Exception as err:
-        print("(x) Server Error --> {err}".format(err=err))
+# if __name__ == '__main__':
+#     try:
+#         server = Server()
+#         server.run()
+#     except Exception as err:
+#         print("(x) Server Error --> {err}".format(err=err))

@@ -12,7 +12,7 @@ from client import Client  # assumes that your client file is in this folder
 from tracker import Tracker  # assumes that your Tracker file is in this folder
 from torrent import Torrent  # assumes that your Torrent file is in this folder
 import uuid
-
+from threading import Thread
 
 class Peer:
     SERVER_PORT = 5000
@@ -36,7 +36,7 @@ class Peer:
         self.server_ip_address = server_ip_address
         self.id = uuid.uuid4()  # creates unique id for the peer
         self.role = role
-        self.torrent = Torrent()
+        self.torrent = Torrent('./age.torrent')
         self.tracker = None
 
     def run_server(self):

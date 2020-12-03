@@ -152,9 +152,9 @@ class Torrent:
 
 # uncomment the following code for testing
 
-torrent = Torrent("age.torrent")
-metainfo = torrent.metainfo()
-print(metainfo)
+# torrent = Torrent("age.torrent")
+# metainfo = torrent.metainfo()
+# print(metainfo)
 
 # print(torrent.info_hash())
 

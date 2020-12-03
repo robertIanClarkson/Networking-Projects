@@ -89,14 +89,14 @@ class Client(object):
             self.menu.process_user_data()
 
 
-if __name__ == '__main__':
-    try:
-        client = Client()
-        client.connect()
-        client.run()
-    except KeyboardInterrupt as err:
-        print('\n(x) You left abruptly')
-    except Exception as err:
-        print('\n(x) Client Error --> {err}'.format(err=err))
-    finally:
-        exit()
+# if __name__ == '__main__':
+#     try:
+#         client = Client()
+#         client.connect()
+#         client.run()
+#     except KeyboardInterrupt as err:
+#         print('\n(x) You left abruptly')
+#     except Exception as err:
+#         print('\n(x) Client Error --> {err}'.format(err=err))
+#     finally:
+#         exit()
