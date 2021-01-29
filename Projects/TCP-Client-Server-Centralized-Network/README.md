@@ -2,6 +2,8 @@
 
 ## Description
 
+This is a really cool stealth chat room that runs in your command console. It uses TCP paired with a custom OOP message protocol that is easy to understand.
+
 This project uses the base socket library and enables communication between the server and multiple clients. The main goal of this project is to create a way for multiple clients to exchange messages with each other as well as create and join chat rooms.
 
 ## Running
